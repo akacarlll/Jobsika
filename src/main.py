@@ -2,6 +2,9 @@
 
 from scraper.site_scrapers import WelcomeToTheJungleScraper
 from job_parser.llm_client import LLMClient
+from pathlib import Path
+import pandas as pd 
+from datetime import datetime
 
 class JobApplicationProcessor:
     """Processes job applications by scraping and parsing job offers."""
@@ -10,10 +13,15 @@ class JobApplicationProcessor:
         self.url = url
         self.scraper = WelcomeToTheJungleScraper(url=self.url)
         self.parser = parser
-
+        self.job_db_path = Path("data/track_job.csv")
 
     def create_prompt(self, job_text: str) -> str:
-        """Creates a prompt for the LLM based on the job text."""
+        """
+        Creates a prompt for the LLM based on the job text.
+
+        Return: 
+            str: The formatted prompt for the LLM.
+        """
 
         template = """
             Extract the following information from the job offer:
@@ -39,24 +47,39 @@ class JobApplicationProcessor:
         """
         return template.format(job_text=job_text)
     
-    def parse_json_response(self, response: str) -> dict:
-        """Parses the JSON response from the LLM."""
-        import json
-        try:
-            data = json.loads(response)
-            return data
-        except json.JSONDecodeError:
-            raise ValueError("Failed to parse JSON response from LLM")
+    def add_job_info(self)-> None:
+        """
+        Add entry to the job post dictionary.
+        These information can't be outputed by the LLM.
+        """
+        self.job_offer_dict = self.process_job_offer()
+        self.job_offer_dict["Application Date"] = datetime.now()
+        self.job_offer_dict["URL"] = self.url
 
-    def process_job_application(self):
-        """Scrapes a job offer and generates a summary."""
+    def process_job_offer(self)-> dict:
+        """
+        Scrapes a job offer and generates a summary.
+
+        Return:
+            dict: A dict containaing the information from the Job post.
+        """
         job_text = self.scraper.scrape_job()
         prompt = self.create_prompt(job_text)
-        data = self.parser.generate(prompt)
-        return data
-    
-app_processor = JobApplicationProcessor("https://www.welcometothejungle.com/fr/companies/hello-watt/jobs/backend-software-engineer-h-f-cdi_paris", LLMClient())
-result = app_processor.process_job_application()
-print(result)
+        return self.parser.generate(prompt)
+
+
+    def add_job_offer_to_db(self) -> None:
+        """
+        Add an entry to the job Database.
+        """
+        if Path.exists(self.job_db_path):
+            job_db = pd.read_csv(self.job_db_path)
+            new_row = pd.DataFrame([self.job_offer_dict])
+            job_db = pd.concat([job_db, new_row], ignore_index=True)
+        else :
+            job_db = pd.DataFrame(self.job_offer_dict)
+        job_db.to_csv(self.job_db_path)
+        
+
 
         

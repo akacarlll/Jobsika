@@ -52,7 +52,7 @@ class LLMClient:
         model: Optional[str] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None
-    ) -> str:
+    ) -> dict:
         """Make API call to Google AI."""
         
         model = model or self.default_google_model
@@ -75,23 +75,15 @@ class LLMClient:
         response = requests.post(url, headers=headers, json=payload, params=params)
         response.raise_for_status()
         data = response.json()
-        # Extract the text from the response
-        try:
-            text = data['candidates'][0]['content']['parts'][0]['text']
-        except (KeyError, IndexError) as e:
-            raise ValueError("Unexpected response structure from Google AI API") from e
+
+        text = data['candidates'][0]['content']['parts'][0]['text']
         
-        # Remove markdown code fences and whitespace
         cleaned_text = text.strip()
         if cleaned_text.startswith("```json") and cleaned_text.endswith("```"):
-            cleaned_text = cleaned_text[7:-3].strip()  # Remove ```json and ```
+            cleaned_text = cleaned_text[7:-3].strip()
         
-        # Parse the JSON string into a dictionary
-        try:
-            parsed_json = json.loads(cleaned_text)
-            return parsed_json
-        except json.JSONDecodeError as e:
-            raise ValueError("Failed to parse JSON from response") from e
+        parsed_json = json.loads(cleaned_text)
+        return parsed_json
     
     def _call_together_ai(
         self, 
@@ -99,7 +91,7 @@ class LLMClient:
         model: Optional[str] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None
-    ) -> str:
+    ) -> dict:
         """Make API call to Together AI."""
         
         model = model or self.default_together_model
@@ -132,7 +124,7 @@ class LLMClient:
         model: Optional[str] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None
-    ) -> str:
+    ) -> dict:
         """
         Generate text using specified provider and parameters.
         
@@ -148,8 +140,6 @@ class LLMClient:
         Returns:
             Generated text response
         """
-        
-        # Call appropriate provider
         if provider.lower() == "google":
             return self._call_google_ai(prompt, model, temperature, max_tokens)
         elif provider.lower() == "together_ai":
