@@ -31,7 +31,7 @@ class JobPostingView(View):
         logger.info("Successfully processed the URL.")
 
         sheet_response = self.send_to_sheet()
-        print(sheet_response)
+
         return JsonResponse(
             {
                 "url": url,
@@ -44,8 +44,7 @@ class JobPostingView(View):
     def send_to_sheet(self):
         script_url = settings.SHEETS_SCRIPT_URL
         payload = {
-            "url": self.data["url"],
-            "title": self.data["job_title"],
+            **self.data,
         }
         resp = requests.post(script_url, json=payload, timeout=10)
         resp.raise_for_status()
