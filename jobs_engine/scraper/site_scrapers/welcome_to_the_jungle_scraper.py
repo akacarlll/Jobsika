@@ -4,10 +4,8 @@ from ..base_scraper import JobScraper
 
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 
 class WelcomeToTheJungleScraper(JobScraper):
     """Scraper for Welcome to the Jungle job offers"""
