@@ -3,10 +3,7 @@
 import os
 import requests
 from typing import Optional
-from dotenv import load_dotenv
 import json
-
-assert load_dotenv()
 
 class LLMClient:
     """A client to interact with multiple LLM APIs."""
@@ -77,7 +74,6 @@ class LLMClient:
         data = response.json()
 
         text = data['candidates'][0]['content']['parts'][0]['text']
-        
         cleaned_text = text.strip()
         if cleaned_text.startswith("```json") and cleaned_text.endswith("```"):
             cleaned_text = cleaned_text[7:-3].strip()

@@ -1,18 +1,17 @@
 """Main entry point for the job scraping and parsing application."""
 
-from .scraper.site_scrapers import WelcomeToTheJungleScraper
+from .scraper import JobScraper
 from .job_parser.llm_client import LLMClient
 from pathlib import Path
 import pandas as pd 
 from datetime import datetime
-
+from common.util.params import SCRAPERS_DICT
 
 class JobApplicationProcessor:
     """Processes job applications by scraping and parsing job offers."""
 
     def __init__(self, url: str):
         self.url = url
-        self.scraper = WelcomeToTheJungleScraper(url=self.url)
         self.parser = LLMClient()
         self.job_db_path = Path("data/track_job.csv")
 
@@ -48,7 +47,19 @@ class JobApplicationProcessor:
         """
         return template.format(job_text=job_text)
     
+    def get_site_to_scrape(self)-> str:
+        if "welcometothejungle" in self.url:
+            return "welcome_to_the_jungle"
+        if "linkedin" in self.url:
+            return "linkedin"
+        return "unkown"
+    def get_scraper(self) -> JobScraper:
+        """_summary_
 
+        Returns:
+            JobScraper: _description_
+        """
+        return SCRAPERS_DICT[self.get_site_to_scrape()]
     def process_job_offer(self)-> dict:
         """
         Scrapes a job offer and generates a summary.
@@ -56,11 +67,12 @@ class JobApplicationProcessor:
         Return:
             dict: A dict containaing the information from the Job post.
         """
-        job_text = self.scraper.scrape_job()
+        job_text = self.get_scraper().scrape_job()
+
         prompt = self.create_prompt(job_text)
         self.job_offer_dict = self.parser.generate(prompt)
-        self.job_offer_dict["Application Date"] = datetime.now()
-        self.job_offer_dict["URL"] = self.url
+        self.job_offer_dict["application_date"] = datetime.now()
+        self.job_offer_dict["url"] = self.url
         return self.job_offer_dict
 
     def add_job_offer_to_db(self) -> None:
