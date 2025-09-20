@@ -64,7 +64,7 @@ ROOT_URLCONF = "jobsika.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],  # can stay empty since we use app templates
+        "DIRS": [BASE_DIR / "templates"],  # can stay empty since we use app templates
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
