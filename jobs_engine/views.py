@@ -2,16 +2,10 @@ from django.views import View
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render
 from .service import JobApplicationProcessor
-from .models import JobPosting
 import requests
 from django.conf import settings
-from urllib.parse import urlencode
-import secrets
 import logging
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import render, redirect
 

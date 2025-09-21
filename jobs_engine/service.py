@@ -2,10 +2,8 @@
 
 from .scraper import JobScraper
 from .job_parser.llm_client import LLMClient
-from pathlib import Path
-import pandas as pd 
 from datetime import datetime
-from common.util.params import SCRAPERS_DICT
+from .params import SCRAPERS_DICT, AVAILABLE_SITE_FOR_SCRAPING
 import logging
 
 logger = logging.getLogger(__name__)
@@ -17,7 +15,6 @@ class JobApplicationProcessor:
         self.notes = notes
         self.url = ""
         self.parser = LLMClient()
-        self.job_db_path = Path("data/track_job.csv")
 
     def create_prompt(self, job_description: str) -> str:
         """
@@ -52,11 +49,16 @@ class JobApplicationProcessor:
         return template.format(job_description=job_description)
     
     def get_site_to_scrape(self)-> str:
-        if "welcometothejungle" in self.url:
-            return "welcome_to_the_jungle"
-        if "linkedin" in self.url:
-            return "linkedin"
-        return "unkown"
+        """_summary_
+
+        Returns:
+            str: _description_
+        """
+        for available_site in AVAILABLE_SITE_FOR_SCRAPING:
+            if available_site in self.url:
+                return available_site
+        return "unknown"
+    
     def run_scraper(self) -> str:
         """_summary_
 
