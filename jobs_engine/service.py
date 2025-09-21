@@ -6,6 +6,9 @@ from pathlib import Path
 import pandas as pd 
 from datetime import datetime
 from common.util.params import SCRAPERS_DICT
+import logging
+
+logger = logging.getLogger(__name__)
 
 class JobApplicationProcessor:
     """Processes job applications by scraping and parsing job offers."""
@@ -59,7 +62,7 @@ class JobApplicationProcessor:
         Returns:
             JobScraper: _description_
         """
-        return SCRAPERS_DICT[self.get_site_to_scrape()]
+        return SCRAPERS_DICT[self.get_site_to_scrape()](url=self.url)
     def process_job_offer(self)-> dict:
         """
         Scrapes a job offer and generates a summary.
@@ -70,10 +73,15 @@ class JobApplicationProcessor:
         job_text = self.get_scraper().scrape_job()
 
         prompt = self.create_prompt(job_text)
+
         self.job_offer_dict = self.parser.generate(prompt)
-        self.job_offer_dict["application_date"] = datetime.now()
+        now = datetime.now()
+        self.job_offer_dict["application_date"] = now.strftime("%Y-%m-%d %H:%M:%S")
         self.job_offer_dict["url"] = self.url
+        self.job_offer_dict["url"] 
+        self.job_offer_dict["required_skills"] = self.join_list_if_list(self.job_offer_dict["required_skills"])
         return self.job_offer_dict
+
 
     def add_job_offer_to_db(self) -> None:
         """
@@ -86,6 +94,20 @@ class JobApplicationProcessor:
         else :
             job_db = pd.DataFrame(self.job_offer_dict)
         job_db.to_csv(self.job_db_path)
+
+    def join_list_if_list(self, potential_list: str | list) -> str:
+        """
+        As the LLM aren't deteministic, they can output string or list even if we ask for a string.
+
+        Args:
+            potential_list (str | list): _description_
+
+        Returns:
+            str: _description_
+        """
+        if isinstance(potential_list, list):
+            return ", ".join(potential_list)
+        return potential_list
         
 
 

@@ -38,18 +38,15 @@
     </div>
 
     <script>
-        function notifyParentAndClose() {
+        (function notifyParentAndClose() {
             if (window.opener) {
                 window.opener.postMessage({
                     type: 'GOOGLE_AUTH_SUCCESS',
-                    code: '{{ code }}'
+                    code: "{{ code|escapejs }}"
                 }, window.location.origin);
             }
             window.close();
-        }
-        
-        // Auto-fermeture après 3 secondes
-        setTimeout(notifyParentAndClose, 3000);
+        })();
     </script>
 </body>
 </html>

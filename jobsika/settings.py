@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "jobs_engine"
+    "jobs_engine",
+    "home_page",
 ]
 
 MIDDLEWARE = [
@@ -113,6 +114,10 @@ AUTH_PASSWORD_VALIDATORS = [
 GOOGLE_OAUTH2_CLIENT_ID = os.environ["GOOGLE_OAUTH2_CLIENT_ID"]
 GOOGLE_OAUTH2_CLIENT_SECRET = os.environ["GOOGLE_OAUTH2_CLIENT_SECRET"]
 
+# We need these lines below to allow the Google sign in popup to work.
+SECURE_REFERRER_POLICY = 'no-referrer-when-downgrade'
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
+
 # Google Sheets API Scopes
 GOOGLE_SHEETS_SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -141,6 +146,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "jobs_engine/static",
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

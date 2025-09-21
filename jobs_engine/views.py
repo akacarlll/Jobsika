@@ -10,6 +10,8 @@ from django.conf import settings
 from urllib.parse import urlencode
 import secrets
 import logging
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 
 logger = logging.getLogger(__name__)
 
@@ -48,58 +50,27 @@ class JobPostingView(View):
         }
         resp = requests.post(script_url, json=payload, timeout=10)
         resp.raise_for_status()
+        
+        logger.info(f"Response status code: {resp.status_code}")
         return resp.json()
-
-
-class JobFormView(View):
     def get(self, request):
 
-        state_token = secrets.token_urlsafe(32)
-        request.session["google_oauth_state"] = state_token
-        google_auth_params = {
-            "client_id": settings.GOOGLE_OAUTH2_CLIENT_ID,
-            "redirect_uri": settings.GOOGLE_REDIRECT_URI,
-            "scope": " ".join(settings.GOOGLE_SHEETS_SCOPES),
-            "response_type": "code",
-            "access_type": "offline",
-            "prompt": "consent",
-            "state": state_token,
-        }
-
-        google_auth_url = (
-            f"https://accounts.google.com/o/oauth2/auth?{urlencode(google_auth_params)}"
-        )
-
-        context = {
-            "google_auth_url": google_auth_url,
-        }
-
-        return render(request, "jobs_engine/add_job.html", context)
+        return render(request, "jobs_engine/add_job.html")
 
 
-class GoogleAuthCallbackView(View):
-    def get(self, request):
 
-        code = request.GET.get("code")
-        state = request.GET.get("state")
-
-        session_state = request.session.get("google_oauth_state")
-        if not state or state != session_state:
-            return JsonResponse({"error": "Invalid state token"}, status=400)
-
-        if code:
-            # TODO: Treat the authorization code, for now, we just confirming connexion
-            request.session["google_authenticated"] = True
-            return render(request, "jobs_engine/auth_success.html", {"code": code})
-        else:
-            error = request.GET.get("error", "Unknown error")
-            return render(request, "jobs_engine/auth_error.html", {"error": error})
 
 
 class DisconnectView(View):
+    """_summary_
+
+    Args:
+        View (_type_): _description_
+    """
     def post(self, request):
         request.session.pop("google_authenticated", None)
         request.session.pop("google_auth_code", None)
         request.session.pop("google_oauth_state", None)
 
         return JsonResponse({"status": "disconnected"})
+

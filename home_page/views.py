@@ -9,8 +9,9 @@ from django.conf import settings
 from urllib.parse import urlencode
 import secrets
 import logging
+from django.urls import reverse
 
-class JobFormView(View):
+class HomeView(View):
     def get(self, request):
 
         state_token = secrets.token_urlsafe(32)
@@ -35,24 +36,42 @@ class JobFormView(View):
         return render(request, "home_page/auth.html", context)
 
 
+# class GoogleAuthCallbackView(View):
+#     def get(self, request):
+
+#         code = request.GET.get("code")
+#         state = request.GET.get("state")
+
+#         session_state = request.session.get("google_oauth_state")
+
+#         if not state or state != session_state:
+#             return JsonResponse({"error": "Invalid state token"}, status=400)
+#         if code:
+#             # TODO: Treat the authorization code, for now, we just confirming connexion
+#             request.session["google_authenticated"] = True
+#             return render(request, "home_page/auth_success.html", {"code": code})
+#         else:
+#             error = request.GET.get("error", "Unknown error")
+#             return render(request, "home_page/auth_error.html", {"error": error})
+
 class GoogleAuthCallbackView(View):
     def get(self, request):
-
+        print(f"Full request path: {request.get_full_path()}")
+        print(f"Request GET params: {request.GET}")
         code = request.GET.get("code")
         state = request.GET.get("state")
-
         session_state = request.session.get("google_oauth_state")
 
         if not state or state != session_state:
             return JsonResponse({"error": "Invalid state token"}, status=400)
+
         if code:
-            # TODO: Treat the authorization code, for now, we just confirming connexion
             request.session["google_authenticated"] = True
-            return render(request, "home_page/auth_success.html", {"code": code})
+            
+            return redirect(reverse("jobs_engine:add_job"))  # or dashboard
         else:
             error = request.GET.get("error", "Unknown error")
             return render(request, "home_page/auth_error.html", {"error": error})
-
 
 class CheckAuthView(View):
     """  """

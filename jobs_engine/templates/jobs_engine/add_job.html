@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -209,52 +210,7 @@
     <div class="container">
         <h1>🚀 Ajouter un Job</h1>
         
-        <!-- État de connexion -->
-        <div id="connectionStatus" class="connection-status">
-            {% if request.session.google_authenticated %}
-                <div class="status-connected">
-                    ✅ <strong>Connecté à Google</strong>
-                    <button onclick="disconnect()" class="disconnect-btn">Se déconnecter</button>
-                </div>
-            {% else %}
-                <div class="status-disconnected">
-                    🔒 <strong>Non connecté</strong> - Connectez-vous à Google pour commencer
-                </div>
-            {% endif %}
-        </div>
 
-        <!-- Section de connexion Google (si pas connecté) -->
-        {% if not request.session.google_authenticated %}
-        <div id="authSection">
-            <!-- Debug info (à supprimer en production) -->
-            <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; font-size: 12px; max-height: 200px; overflow-y: auto;">
-                <strong>Debug Info:</strong><br>
-                <strong>Client ID:</strong> {{ debug_client_id }}<br>
-                <strong>Redirect URI:</strong> {{ debug_redirect_uri }}<br>
-                <button onclick="copyToClipboard('{{ debug_full_url }}')" style="padding: 5px; font-size: 11px;">Copy URL</button>
-                <button onclick="testInNewTab()" style="padding: 5px; font-size: 11px;">Test in New Tab</button>
-            </div>
-            
-            <button id="googleAuthBtn" class="google-btn" onclick="openGoogleAuth()">
-                <div class="google-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24">
-                        <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                    </svg>
-                </div>
-                Se connecter avec Google
-            </button>
-            
-            <div id="loading" class="loading" style="display: none;">
-                Connexion en cours...
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Formulaire d'ajout d'emploi (si connecté) -->
-        {% if request.session.google_authenticated %}
         <div id="jobForm" class="job-form">
             <h2>📝 Ajouter une offre d'emploi</h2>
             <form method="post" action="{% url 'jobs_engine:process_job' %}">
@@ -290,79 +246,12 @@
                 </div>
             </form>
         </div>
-        {% endif %}
     </div>
     
-    <div id="popupOverlay" class="popup-overlay">
-        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: white; font-size: 18px;">
-            <div>Connexion à Google en cours...</div>
-        </div>
-    </div>
 
     <script>
-        let authWindow;
+
         
-        function openGoogleAuth() {
-            const authUrl = "{{ google_auth_url|safe }}";
-            console.log("Opening Google Auth with URL:", authUrl);
-            
-            const loading = document.getElementById('loading');
-            const btn = document.getElementById('googleAuthBtn');
-            const overlay = document.getElementById('popupOverlay');
-            
-            // Vérifier que l'URL contient bien response_type
-            if (!authUrl.includes('response_type=code')) {
-                alert('ERREUR: response_type manquant dans l\'URL!\nURL: ' + authUrl);
-                return;
-            }
-            
-            // Afficher l'état de chargement
-            loading.style.display = 'block';
-            btn.disabled = true;
-            btn.textContent = 'Connexion...';
-            overlay.style.display = 'block';
-            
-            // Ouvrir la popup de Google OAuth
-            authWindow = window.open(
-                authUrl,
-                'googleAuth',
-                'width=500,height=600,scrollbars=yes,resizable=yes,centerscreen=yes'
-            );
-            
-            // Surveiller la fermeture de la popup
-            const checkClosed = setInterval(() => {
-                if (authWindow.closed) {
-                    clearInterval(checkClosed);
-                    resetButton();
-                }
-            }, 1000);
-            
-            // Écouter les messages de la popup (si l'auth réussit)
-            window.addEventListener('message', function(event) {
-                if (event.origin !== window.location.origin) return;
-                
-                if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
-                    clearInterval(checkClosed);
-                    authWindow.close();
-                    handleAuthSuccess();
-                } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
-                    clearInterval(checkClosed);
-                    authWindow.close();
-                    handleAuthError(event.data.error);
-                }
-            });
-        }
-        
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert('URL copiée dans le presse-papiers !');
-            });
-        }
-        
-        function testInNewTab() {
-            const authUrl = "{{ google_auth_url|safe }}";
-            window.open(authUrl, '_blank');
-        }
         
         function clearForm() {
             document.getElementById('job_url').value = '';
@@ -406,26 +295,6 @@
                 Se connecter avec Google
             `;
             overlay.style.display = 'none';
-        }
-        
-        function handleAuthSuccess() {
-            document.body.innerHTML = `
-                <div class="container">
-                    <h1>✅ Connexion réussie !</h1>
-                    <p>Vous êtes maintenant connecté à Google.</p>
-                    <p>Vous pouvez maintenant ajouter des emplois à votre Google Sheet.</p>
-                </div>
-            `;
-        }
-        
-        function handleAuthError(error) {
-            document.body.innerHTML = `
-                <div class="container">
-                    <h1>❌ Erreur de connexion</h1>
-                    <p>Une erreur est survenue : ${error || 'Erreur inconnue'}</p>
-                    <button onclick="location.reload()" class="google-btn">Réessayer</button>
-                </div>
-            `;
         }
     </script>
 </body>
