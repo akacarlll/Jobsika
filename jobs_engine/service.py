@@ -13,12 +13,13 @@ logger = logging.getLogger(__name__)
 class JobApplicationProcessor:
     """Processes job applications by scraping and parsing job offers."""
 
-    def __init__(self, url: str):
-        self.url = url
+    def __init__(self, notes:str):
+        self.notes = notes
+        self.url = ""
         self.parser = LLMClient()
         self.job_db_path = Path("data/track_job.csv")
 
-    def create_prompt(self, job_text: str) -> str:
+    def create_prompt(self, job_description: str) -> str:
         """
         Creates a prompt for the LLM based on the job text.
 
@@ -38,7 +39,7 @@ class JobApplicationProcessor:
             8. Contract Type: The type of contract (e.g., CDI, CDD, freelance).
 
             Job Offer Text:
-            {job_text}
+            {job_description}
 
             Please format the output as a JSON object with keys: 
             'job_title', 'company_name', 'location', 'required_skills', 'job_description_summary', 'salary', 'contact_information'.
@@ -48,7 +49,7 @@ class JobApplicationProcessor:
             - For 'required_skills', provide an empty list ([]) if not found.
             - For 'salary', provide null if not found or if the salary is not explicitly stated.
         """
-        return template.format(job_text=job_text)
+        return template.format(job_description=job_description)
     
     def get_site_to_scrape(self)-> str:
         if "welcometothejungle" in self.url:
@@ -56,44 +57,49 @@ class JobApplicationProcessor:
         if "linkedin" in self.url:
             return "linkedin"
         return "unkown"
-    def get_scraper(self) -> JobScraper:
+    def run_scraper(self) -> str:
         """_summary_
 
         Returns:
             JobScraper: _description_
         """
-        return SCRAPERS_DICT[self.get_site_to_scrape()](url=self.url)
-    def process_job_offer(self)-> dict:
+        scraper : JobScraper = SCRAPERS_DICT[self.get_site_to_scrape()](url=self.url)
+        return scraper.scrape_job()
+
+    def process_job_offer(self, job_description: str | None = None)-> dict:
         """
         Scrapes a job offer and generates a summary.
 
+        job_description (str | None): The job description if the user sent it, 
+            None if they used the URL method.
         Return:
             dict: A dict containaing the information from the Job post.
         """
-        job_text = self.get_scraper().scrape_job()
+        if not job_description: 
+            job_description = self.run_scraper()
 
-        prompt = self.create_prompt(job_text)
+        prompt = self.create_prompt(job_description)
 
         self.job_offer_dict = self.parser.generate(prompt)
+
+        return self.add_element_to_job_offer()
+
+
+    def add_element_to_job_offer(self) -> dict:
+        """_summary_
+
+        Returns:
+            dict: _description_
+        """
         now = datetime.now()
         self.job_offer_dict["application_date"] = now.strftime("%Y-%m-%d %H:%M:%S")
-        self.job_offer_dict["url"] = self.url
+        self.job_offer_dict["url"] = self.url 
         self.job_offer_dict["url"] 
         self.job_offer_dict["required_skills"] = self.join_list_if_list(self.job_offer_dict["required_skills"])
+        self.job_offer_dict["notes"] = self.notes
         return self.job_offer_dict
 
 
-    def add_job_offer_to_db(self) -> None:
-        """
-        Add an entry to the job Database.
-        """
-        if Path.exists(self.job_db_path):
-            job_db = pd.read_csv(self.job_db_path)
-            new_row = pd.DataFrame([self.job_offer_dict])
-            job_db = pd.concat([job_db, new_row], ignore_index=True)
-        else :
-            job_db = pd.DataFrame(self.job_offer_dict)
-        job_db.to_csv(self.job_db_path)
 
     def join_list_if_list(self, potential_list: str | list) -> str:
         """

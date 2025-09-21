@@ -204,36 +204,140 @@
         .clear-btn:hover {
             background: #5a6268;
         }
+                .job-form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .submit-btn, .clear-btn, .toggle-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .submit-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+        
+        .clear-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .clear-btn:hover {
+            background-color: #5a6268;
+        }
+        
+        .toggle-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .toggle-btn:hover {
+            background-color: #0056b3;
+        }
+        
+        small {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- <div class="container">
         <h1>🚀 Ajouter un Job</h1>
-        
+         -->
 
         <div id="jobForm" class="job-form">
-            <h2>📝 Ajouter une offre d'emploi</h2>
+            <h2 id="formTitle">📝 Ajouter une offre d'emploi</h2>
             <form method="post" action="{% url 'jobs_engine:process_job' %}">
                 {% csrf_token %}
                 
-                <div class="form-group">
-                    <label for="job_url">🔗 URL de l'offre d'emploi :</label>
-                    <input type="url" 
-                           id="job_url" 
-                           name="job_url" 
-                           placeholder="https://example.com/job-posting" 
-                           required 
-                           class="form-input">
-                    <small>Collez l'URL de l'offre d'emploi que vous souhaitez analyser</small>
+                <!-- URL Input Section (default visible) -->
+                <div id="urlSection">
+                    <div class="form-group">
+                        <label for="job_url">🔗 URL de l'offre d'emploi :</label>
+                        <input type="url" 
+                            id="job_url" 
+                            name="job_url" 
+                            placeholder="https://example.com/job-posting" 
+                            class="form-input">
+                        <small>Collez l'URL de l'offre d'emploi que vous souhaitez analyser</small>
+                    </div>
+                </div>
+                
+                <!-- Job Description Section (initially hidden) -->
+                <div id="descriptionSection" class="hidden">
+                    <div class="form-group">
+                        <label for="job_description">📄 Description de l'offre d'emploi :</label>
+                        <textarea id="job_description" 
+                                name="job_description" 
+                                placeholder="Collez ou tapez la description complète de l'offre d'emploi ici..." 
+                                class="form-textarea"
+                                rows="10"></textarea>
+                        <small>Copiez-collez la description complète de l'offre d'emploi</small>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="notes">📝 Notes personnelles (optionnel) :</label>
                     <textarea id="notes" 
-                              name="notes" 
-                              placeholder="Vos notes sur cette offre..." 
-                              class="form-textarea"
-                              rows="3"></textarea>
+                            name="notes" 
+                            placeholder="Vos notes sur cette offre..." 
+                            class="form-textarea"
+                            rows="3"></textarea>
                 </div>
                 
                 <div class="form-actions">
@@ -243,6 +347,9 @@
                     <button type="button" onclick="clearForm()" class="clear-btn">
                         🗑️ Effacer
                     </button>
+                    <button id="change_submit_type" type="button" onclick="toggleSubmitType()" class="toggle-btn">
+                        📝 Saisie manuelle
+                    </button>
                 </div>
             </form>
         </div>
@@ -250,13 +357,55 @@
     
 
     <script>
-
+        let isUrlMode = true; // Track current mode (true = URL mode, false = description mode)
         
+        function toggleSubmitType() {
+            const urlSection = document.getElementById('urlSection');
+            const descriptionSection = document.getElementById('descriptionSection');
+            const toggleButton = document.getElementById('change_submit_type');
+            const formTitle = document.getElementById('formTitle');
+            const jobUrlInput = document.getElementById('job_url');
+            const jobDescriptionInput = document.getElementById('job_description');
+            
+            if (isUrlMode) {
+                // Switch to description mode
+                urlSection.classList.add('hidden');
+                descriptionSection.classList.remove('hidden');
+                toggleButton.textContent = '🔗 Saisie par URL';
+                formTitle.textContent = '📝 Ajouter une description d\'emploi';
+                
+                // Remove required attribute from URL input and add to description
+                jobUrlInput.removeAttribute('required');
+                jobDescriptionInput.setAttribute('required', 'required');
+                
+                isUrlMode = false;
+            } else {
+                // Switch to URL mode
+                descriptionSection.classList.add('hidden');
+                urlSection.classList.remove('hidden');
+                toggleButton.textContent = '📝 Saisie manuelle';
+                formTitle.textContent = '📝 Ajouter une offre d\'emploi';
+                
+                // Remove required attribute from description input and add to URL
+                jobDescriptionInput.removeAttribute('required');
+                jobUrlInput.setAttribute('required', 'required');
+                
+                isUrlMode = true;
+            }
+        }
         
         function clearForm() {
+            // Clear all form inputs
             document.getElementById('job_url').value = '';
+            document.getElementById('job_description').value = '';
             document.getElementById('notes').value = '';
         }
+        
+        // Initialize the form with URL mode and required attribute
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('job_url').setAttribute('required', 'required');
+        });
+
         
         function disconnect() {
             if (confirm('Voulez-vous vraiment vous déconnecter de Google ?')) {

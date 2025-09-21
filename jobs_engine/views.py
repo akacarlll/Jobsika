@@ -22,22 +22,25 @@ logger = logging.getLogger(__name__)
 class JobPostingView(View):
 
     def post(self, request, *args, **kwargs):
-        url = request.POST["job_url"]
+        job_url = request.POST.get("job_url", "")
+        job_description = request.POST.get('job_description')
         notes = request.POST.get("notes", "")
+        application_processor = JobApplicationProcessor(notes=notes)
 
         # TODO: Verify thats it's a requetable URL
 
-        application_processor = JobApplicationProcessor(url)
-        self.data = application_processor.process_job_offer()
+        if job_url:
+            application_processor.url = job_url
+            self.data = application_processor.process_job_offer()
+        if job_description:
+            self.data = application_processor.process_job_offer(job_description=job_description)
 
         logger.info("Successfully processed the URL.")
-
+        
         sheet_response = self.send_to_sheet()
 
         return JsonResponse(
             {
-                "url": url,
-                "notes": notes,
                 "processed_data": self.data,
                 "sheet_response": sheet_response,
             }
