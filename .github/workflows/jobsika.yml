@@ -1,0 +1,39 @@
+name: Jobsika CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.13
+
+    - name: Set up Miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        python-version: 3.11
+        environment-file: environment.yml
+        activate-environment: jobsika
+        use-mamba: true
+
+
+    - name: Run lint (ruff)
+      run: |
+        pip install ruff
+        ruff check .
+
+    - name: Run tests
+      run: |
+        python manage.py test
