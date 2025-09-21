@@ -32,15 +32,15 @@ class JobPostingView(View):
             self.data = application_processor.process_job_offer(job_description=job_description)
 
         logger.info("Successfully processed the URL.")
-        
+
         sheet_response = self.send_to_sheet()
         if sheet_response == 200:
             messages.success(
-                request, 
+                request,
                 f"✅ {self.data["job_title"]} was successfully added to the sheets!"
             )
         else:
-            messages.error(request, 
+            messages.error(request,
                 f"{self.data["job_title"]} was not added to the sheets!"
             )
         # Redirect back to the form page
@@ -62,7 +62,7 @@ class JobPostingView(View):
         logger.info(f"Response status code: {resp.status_code}")
 
         return resp.status_code
-    
+
     def get(self, request):
 
         return render(request, "jobs_engine/add_job.html")

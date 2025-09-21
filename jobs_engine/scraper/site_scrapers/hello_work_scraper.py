@@ -25,20 +25,20 @@ class HelloWorkScraper(JobScraper):
 
         job_description_div = soup.find("div", class_="tw-layout-inner-grid tw-pb-12 sm:tw-pb-16")
         return job_description_div.get_text(separator="\n", strip=True) # type: ignore
-    
+
     def get_random_header(self)-> dict:
         user_agents = [
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)"
             " Chrome/120.0.0.0 Safari/537.36",
-            
+
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
-            
+
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)"
             " Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0",
-            
+
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_3) AppleWebKit/605.1.15 (KHTML, like Gecko)"
             " Version/16.0 Safari/605.1.15",
-            
+
             "Mozilla/5.0 (iPhone; CPU iPhone OS 16_2 like Mac OS X) AppleWebKit/605.1.15"
             " (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1",
         ]

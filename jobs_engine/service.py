@@ -47,7 +47,7 @@ class JobApplicationProcessor:
             - For 'salary', provide null if not found or if the salary is not explicitly stated.
         """
         return template.format(job_description=job_description)
-    
+
     def get_site_to_scrape(self)-> str:
         """_summary_
 
@@ -58,7 +58,7 @@ class JobApplicationProcessor:
             if available_site in self.url:
                 return available_site
         return "unknown"
-    
+
     def run_scraper(self) -> str:
         """_summary_
 
@@ -77,7 +77,7 @@ class JobApplicationProcessor:
         Return:
             dict: A dict containaing the information from the Job post.
         """
-        if not job_description: 
+        if not job_description:
             job_description = self.run_scraper()
 
         prompt = self.create_prompt(job_description)
@@ -95,8 +95,8 @@ class JobApplicationProcessor:
         """
         now = datetime.now()
         self.job_offer_dict["application_date"] = now.strftime("%Y-%m-%d %H:%M:%S")
-        self.job_offer_dict["url"] = self.url 
-        self.job_offer_dict["url"] 
+        self.job_offer_dict["url"] = self.url
+        self.job_offer_dict["url"]
         self.job_offer_dict["required_skills"] = self.join_list_if_list(self.job_offer_dict["required_skills"])
         self.job_offer_dict["notes"] = self.notes
         return self.job_offer_dict
@@ -116,7 +116,7 @@ class JobApplicationProcessor:
         if isinstance(potential_list, list):
             return ", ".join(potential_list)
         return potential_list
-        
 
 
-        
+
+

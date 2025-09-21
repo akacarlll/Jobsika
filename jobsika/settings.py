@@ -11,9 +11,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-import os 
+import os
 
-# TODO: To Remove find a way to correctly export env variables 
+# TODO: To Remove find a way to correctly export env variables
 from dotenv import load_dotenv
 assert load_dotenv(".env")
 
