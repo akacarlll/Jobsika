@@ -12,13 +12,15 @@ import secrets
 import logging
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.contrib import messages
+from django.shortcuts import render, redirect
 
 logger = logging.getLogger(__name__)
 
 
 @method_decorator(
     csrf_exempt, name="dispatch"
-)  # remove if using CSRF tokens in frontend
+)
 class JobPostingView(View):
 
     def post(self, request, *args, **kwargs):
@@ -38,24 +40,35 @@ class JobPostingView(View):
         logger.info("Successfully processed the URL.")
         
         sheet_response = self.send_to_sheet()
+        if sheet_response == 200:
+            messages.success(
+                request, 
+                f"✅ {self.data["job_title"]} was successfully added to the sheets!"
+            )
+        else:
+            messages.error(request, 
+                f"{self.data["job_title"]} was not added to the sheets!"
+            )
+        # Redirect back to the form page
+        return redirect('jobs_engine:add_job')
 
-        return JsonResponse(
-            {
-                "processed_data": self.data,
-                "sheet_response": sheet_response,
-            }
-        )
+    def send_to_sheet(self)-> int:
+        """_summary_
 
-    def send_to_sheet(self):
+        Returns:
+            int: _description_
+        """
         script_url = settings.SHEETS_SCRIPT_URL
         payload = {
             **self.data,
         }
         resp = requests.post(script_url, json=payload, timeout=10)
         resp.raise_for_status()
-        
+
         logger.info(f"Response status code: {resp.status_code}")
-        return resp.json()
+
+        return resp.status_code
+    
     def get(self, request):
 
         return render(request, "jobs_engine/add_job.html")

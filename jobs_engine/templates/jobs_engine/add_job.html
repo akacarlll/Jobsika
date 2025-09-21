@@ -2,449 +2,74 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <link rel="stylesheet" href="{% static 'css/css_file.css' %}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajouter un Job</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 500px;
-            width: 100%;
-        }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-        }
-        
-        .google-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            background: #4285f4;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .google-btn:hover {
-            background: #3367d6;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.3);
-        }
-        
-        .google-icon {
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .popup-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-        
-        .loading {
-            color: #666;
-            margin-top: 20px;
-            font-style: italic;
-        }
-        
-        /* Nouveaux styles pour le formulaire */
-        .connection-status {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .status-connected {
-            background: #d4edda;
-            color: #155724;
-            border: 2px solid #c3e6cb;
-        }
-        
-        .status-disconnected {
-            background: #f8d7da;
-            color: #721c24;
-            border: 2px solid #f5c6cb;
-        }
-        
-        .disconnect-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 10px;
-            font-size: 12px;
-        }
-        
-        .disconnect-btn:hover {
-            background: #c82333;
-        }
-        
-        .job-form {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 15px;
-            margin-top: 20px;
-            text-align: left;
-        }
-        
-        .job-form h2 {
-            color: #333;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .form-input, .form-textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-            box-sizing: border-box;
-        }
-        
-        .form-input:focus, .form-textarea:focus {
-            outline: none;
-            border-color: #4285f4;
-            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
-        }
-        
-        .form-group small {
-            color: #666;
-            font-size: 12px;
-            margin-top: 5px;
-            display: block;
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 25px;
-        }
-        
-        .submit-btn {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-        
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
-        }
-        
-        .clear-btn {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .clear-btn:hover {
-            background: #5a6268;
-        }
-                .job-form {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .form-input, .form-textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        
-        .form-input:focus, .form-textarea:focus {
-            outline: none;
-            border-color: #007bff;
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .submit-btn, .clear-btn, .toggle-btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .submit-btn {
-            background-color: #28a745;
-            color: white;
-        }
-        
-        .submit-btn:hover {
-            background-color: #218838;
-        }
-        
-        .clear-btn {
-            background-color: #6c757d;
-            color: white;
-        }
-        
-        .clear-btn:hover {
-            background-color: #5a6268;
-        }
-        
-        .toggle-btn {
-            background-color: #007bff;
-            color: white;
-        }
-        
-        .toggle-btn:hover {
-            background-color: #0056b3;
-        }
-        
-        small {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        
-        .hidden {
-            display: none;
-        }
-    </style>
+
 </head>
 <body>
-    <!-- <div class="container">
-        <h1>🚀 Ajouter un Job</h1>
-         -->
-
-        <div id="jobForm" class="job-form">
-            <h2 id="formTitle">📝 Ajouter une offre d'emploi</h2>
-            <form method="post" action="{% url 'jobs_engine:process_job' %}">
-                {% csrf_token %}
-                
-                <!-- URL Input Section (default visible) -->
-                <div id="urlSection">
-                    <div class="form-group">
-                        <label for="job_url">🔗 URL de l'offre d'emploi :</label>
-                        <input type="url" 
-                            id="job_url" 
-                            name="job_url" 
-                            placeholder="https://example.com/job-posting" 
-                            class="form-input">
-                        <small>Collez l'URL de l'offre d'emploi que vous souhaitez analyser</small>
-                    </div>
-                </div>
-                
-                <!-- Job Description Section (initially hidden) -->
-                <div id="descriptionSection" class="hidden">
-                    <div class="form-group">
-                        <label for="job_description">📄 Description de l'offre d'emploi :</label>
-                        <textarea id="job_description" 
-                                name="job_description" 
-                                placeholder="Collez ou tapez la description complète de l'offre d'emploi ici..." 
-                                class="form-textarea"
-                                rows="10"></textarea>
-                        <small>Copiez-collez la description complète de l'offre d'emploi</small>
-                    </div>
-                </div>
-                
+    <div id="jobForm" class="job-form">
+        <h2 id="formTitle">📝 Ajouter une offre d'emploi</h2>
+        <form method="post" action="{% url 'jobs_engine:process_job' %}">
+            {% csrf_token %}
+            
+            <div id="urlSection">
                 <div class="form-group">
-                    <label for="notes">📝 Notes personnelles (optionnel) :</label>
-                    <textarea id="notes" 
-                            name="notes" 
-                            placeholder="Vos notes sur cette offre..." 
+                    <label for="job_url">🔗 URL de l'offre d'emploi :</label>
+                    <input type="url" 
+                        id="job_url" 
+                        name="job_url" 
+                        placeholder="https://example.com/job-posting" 
+                        class="form-input">
+                    <small>Collez l'URL de l'offre d'emploi que vous souhaitez analyser</small>
+                </div>
+            </div>
+            
+            <div id="descriptionSection" class="hidden">
+                <div class="form-group">
+                    <label for="job_description">📄 Description de l'offre d'emploi :</label>
+                    <textarea id="job_description" 
+                            name="job_description" 
+                            placeholder="Collez ou tapez la description complète de l'offre d'emploi ici..." 
                             class="form-textarea"
-                            rows="3"></textarea>
+                            rows="10"></textarea>
+                    <small>Copiez-collez la description complète de l'offre d'emploi</small>
                 </div>
-                
-                <div class="form-actions">
-                    <button type="submit" class="submit-btn">
-                        🚀 Analyser et sauvegarder
-                    </button>
-                    <button type="button" onclick="clearForm()" class="clear-btn">
-                        🗑️ Effacer
-                    </button>
-                    <button id="change_submit_type" type="button" onclick="toggleSubmitType()" class="toggle-btn">
-                        📝 Saisie manuelle
-                    </button>
+            </div>
+            
+            <div class="form-group">
+                <label for="notes">📝 Notes personnelles (optionnel) :</label>
+                <textarea id="notes" 
+                        name="notes" 
+                        placeholder="Vos notes sur cette offre..." 
+                        class="form-textarea"
+                        rows="3"></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">
+                    🚀 Analyser et sauvegarder
+                </button>
+                <button type="button" onclick="clearForm()" class="clear-btn">
+                    🗑️ Effacer
+                </button>
+                <button id="change_submit_type" type="button" onclick="toggleSubmitType()" class="toggle-btn">
+                    📝 Saisie manuelle
+                </button>
+            </div>
+        </form>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <button type="button" class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+                    {{ message }}
                 </div>
-            </form>
+            {% endfor %}
+        {% endif %}
         </div>
     </div>
     
-
-    <script>
-        let isUrlMode = true; // Track current mode (true = URL mode, false = description mode)
-        
-        function toggleSubmitType() {
-            const urlSection = document.getElementById('urlSection');
-            const descriptionSection = document.getElementById('descriptionSection');
-            const toggleButton = document.getElementById('change_submit_type');
-            const formTitle = document.getElementById('formTitle');
-            const jobUrlInput = document.getElementById('job_url');
-            const jobDescriptionInput = document.getElementById('job_description');
-            
-            if (isUrlMode) {
-                // Switch to description mode
-                urlSection.classList.add('hidden');
-                descriptionSection.classList.remove('hidden');
-                toggleButton.textContent = '🔗 Saisie par URL';
-                formTitle.textContent = '📝 Ajouter une description d\'emploi';
-                
-                // Remove required attribute from URL input and add to description
-                jobUrlInput.removeAttribute('required');
-                jobDescriptionInput.setAttribute('required', 'required');
-                
-                isUrlMode = false;
-            } else {
-                // Switch to URL mode
-                descriptionSection.classList.add('hidden');
-                urlSection.classList.remove('hidden');
-                toggleButton.textContent = '📝 Saisie manuelle';
-                formTitle.textContent = '📝 Ajouter une offre d\'emploi';
-                
-                // Remove required attribute from description input and add to URL
-                jobDescriptionInput.removeAttribute('required');
-                jobUrlInput.setAttribute('required', 'required');
-                
-                isUrlMode = true;
-            }
-        }
-        
-        function clearForm() {
-            // Clear all form inputs
-            document.getElementById('job_url').value = '';
-            document.getElementById('job_description').value = '';
-            document.getElementById('notes').value = '';
-        }
-        
-        // Initialize the form with URL mode and required attribute
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('job_url').setAttribute('required', 'required');
-        });
-
-        
-        function disconnect() {
-            if (confirm('Voulez-vous vraiment vous déconnecter de Google ?')) {
-                fetch('{% url "jobs_engine:disconnect" %}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    }
-                })
-                .then(() => {
-                    location.reload();
-                })
-                .catch(error => {
-                    console.error('Erreur lors de la déconnexion:', error);
-                    location.reload();
-                });
-            }
-        }
-        
-        function resetButton() {
-            const loading = document.getElementById('loading');
-            const btn = document.getElementById('googleAuthBtn');
-            const overlay = document.getElementById('popupOverlay');
-            
-            loading.style.display = 'none';
-            btn.disabled = false;
-            btn.innerHTML = `
-                <div class="google-icon">
-                    <svg width="14" height="14" viewBox="0 0 24 24">
-                        <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                    </svg>
-                </div>
-                Se connecter avec Google
-            `;
-            overlay.style.display = 'none';
-        }
-    </script>
+    <script src="{% static 'js/functions.js' %}"></script>
 </body>
 </html>
