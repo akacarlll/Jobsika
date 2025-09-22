@@ -47,21 +47,29 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('job_url').setAttribute('required', 'required');
 });
 
-
 function disconnect() {
-    if (confirm('Voulez-vous vraiment vous déconnecter de Google ?')) {
-        fetch('{% url "jobs_engine:disconnect" %}', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            }
-        })
-        .then(() => {
-            location.reload();
-        })
-        .catch(error => {
-            console.error('Erreur lors de la déconnexion:', error);
-            location.reload();
-        });
-    }
+  if (confirm('Voulez-vous vraiment vous déconnecter de Google ?')) {
+    // This is the URL for your disconnect view
+
+    fetch(disconnectEndpointUrl, {
+      method: 'GET', // or 'GET', depending on your view's configuration
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      }
+    })
+    .then(response => {
+      // Check if the server's response indicates a successful disconnection
+      if (response.redirected) {
+        // If the server sent a redirect response, follow it
+        window.location.href = response.url;
+      } else {
+        // If not, simply reload the page
+        location.reload();
+      }
+    })
+    .catch(error => {
+      console.error('Erreur lors de la déconnexion:', error);
+      location.reload();
+    });
+  }
 }

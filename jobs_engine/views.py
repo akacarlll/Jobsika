@@ -77,10 +77,13 @@ class DisconnectView(View):
     Args:
         View (_type_): _description_
     """
-    def post(self, request):
+
+    def get(self, request):
+        print("get request received")
         request.session.pop("google_authenticated", None)
         request.session.pop("google_auth_code", None)
         request.session.pop("google_oauth_state", None)
 
-        return JsonResponse({"status": "disconnected"})
+        return redirect('home_page:home')
+
 
