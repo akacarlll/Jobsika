@@ -1,5 +1,4 @@
 from django.views import View
-from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from .service import JobApplicationProcessor
@@ -37,11 +36,11 @@ class JobPostingView(View):
         if sheet_response == 200:
             messages.success(
                 request,
-                f"✅ {self.data["job_title"]} was successfully added to the sheets!"
+                f"✅ {self.data['job_title']} was successfully added to the sheets!"
             )
         else:
             messages.error(request,
-                f"{self.data["job_title"]} was not added to the sheets!"
+                f"{self.data['job_title']} was not added to the sheets!"
             )
         # Redirect back to the form page
         return redirect('jobs_engine:add_job')

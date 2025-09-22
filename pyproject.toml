@@ -6,10 +6,10 @@ line-length = 88
 target-version = "py310"
 
 # Enable all rules by default
-select = ["E", "F", "W", "C", "B", "RUF"]
+lint.select = ["E", "F", "W", "C", "B", "RUF"]
 
 # Ignore specific rules if needed
-ignore = ["E501"]  # example: ignore line-length warnings
+lint.ignore = ["E501"]  # example: ignore line-length warnings
 
 # Optional: show verbose output
 # verbose = true

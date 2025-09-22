@@ -19,7 +19,7 @@ class LLMClient:
     ):
         """
         Initialize the LLM client with API keys and default parameters.
-        
+
         Args:
             google_api_key: API key for Google AI
             together_api_key: API key for Together AI
@@ -123,16 +123,16 @@ class LLMClient:
     ) -> dict:
         """
         Generate text using specified provider and parameters.
-        
+
         Args:
-            prompt_template: Either a template string with {variable} placeholders 
+            prompt_template: Either a template string with {variable} placeholders
                            or a PromptTemplate object with template and partial_variables
             variables: Dictionary of variables to substitute (if prompt_template is string)
             provider: LLM provider to use ("google" or "together_ai")
             model: Specific model to use (overrides default)
             temperature: Temperature for generation (overrides default)
             max_tokens: Max tokens for generation (overrides default)
-            
+
         Returns:
             Generated text response
         """

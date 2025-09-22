@@ -20,7 +20,7 @@ class JobApplicationProcessor:
         """
         Creates a prompt for the LLM based on the job text.
 
-        Return: 
+        Return:
             str: The formatted prompt for the LLM.
         """
 
@@ -38,7 +38,7 @@ class JobApplicationProcessor:
             Job Offer Text:
             {job_description}
 
-            Please format the output as a JSON object with keys: 
+            Please format the output as a JSON object with keys:
             'job_title', 'company_name', 'location', 'required_skills', 'job_description_summary', 'salary', 'contact_information'.
 
             If any information is missing or unclear, use the following rules:
@@ -72,7 +72,7 @@ class JobApplicationProcessor:
         """
         Scrapes a job offer and generates a summary.
 
-        job_description (str | None): The job description if the user sent it, 
+        job_description (str | None): The job description if the user sent it,
             None if they used the URL method.
         Return:
             dict: A dict containaing the information from the Job post.
