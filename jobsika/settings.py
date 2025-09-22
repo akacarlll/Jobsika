@@ -148,6 +148,7 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [
     BASE_DIR / "jobs_engine/static/",
+    BASE_DIR / "home_page/static/"
 ]
 
 # Default primary key field type
