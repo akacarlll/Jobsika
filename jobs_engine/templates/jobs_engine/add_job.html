@@ -8,6 +8,9 @@
     <title>Ajouter un Job</title>
 
 </head>
+<button onclick="disconnect()" class="btn btn-danger" id="disconnect_button">
+    Se déconnecter
+</button>
 <body>
     <div id="jobForm" class="job-form">
         <h2 id="formTitle">📝 Ajouter une offre d'emploi</h2>
@@ -102,6 +105,9 @@
             <em>💡 Copiez l'URL complète de l'offre d'emploi depuis l'un de ces sites, si le site souhaité n'est pas parmi ceux-ci, copier la description de l'offre d'emploi</em>
         </p>
     </div>
+    <script>
+    const disconnectEndpointUrl = '{% url "jobs_engine:disconnect" %}';
+    </script>
     <script src="{% static 'js/functions.js' %}"></script>
 </body>
 
