@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Candidatures</title>
+    
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .dashboard-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .plotly-container {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stats-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <!-- Header -->
+    <header class="glass-effect shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Dashboard Candidatures</h1>
+                        <p class="text-sm text-gray-600">Analyse des données de candidatures</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button id="refreshBtn" class="bg-white text-gray-700 px-4 py-2 rounded-lg shadow hover:shadow-md transition-all duration-300 flex items-center space-x-2">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Actualiser</span>
+                    </button>
+                    <div class="text-sm text-gray-600">
+                        <i class="fas fa-clock mr-1"></i>
+                        <span id="lastUpdate">{{ now|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8">
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 fade-in">
+            <div class="stats-card bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Total Candidatures</p>
+                        <p class="text-3xl font-bold text-gray-900" id="totalApplications">-</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-paper-plane text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-card bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Villes Uniques</p>
+                        <p class="text-3xl font-bold text-gray-900" id="uniqueCities">-</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-map-marker-alt text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-card bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Cette Semaine</p>
+                        <p class="text-3xl font-bold text-gray-900" id="thisWeek">-</p>
+                    </div>
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-calendar-week text-purple-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-card bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Taux de Réponse</p>
+                        <p class="text-3xl font-bold text-gray-900">23%</p>
+                    </div>
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-pie text-orange-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Carte géographique -->
+            <div class="lg:col-span-2 fade-in">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4">
+                        <h2 class="text-xl font-semibold text-white flex items-center">
+                            <i class="fas fa-globe-europe mr-3"></i>
+                            Répartition Géographique des Candidatures
+                        </h2>
+                        <p class="text-blue-100 text-sm mt-1">Distribution des candidatures par ville</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="plotly-container" id="mapDashboard">
+                            <div class="flex items-center justify-center h-96">
+                                <div class="loading-spinner"></div>
+                                <span class="ml-3 text-gray-600">Chargement de la carte...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Placeholder for future dashboards -->
+            <div class="fade-in">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden h-96">
+                    <div class="bg-gradient-to-r from-green-500 to-teal-600 px-6 py-4">
+                        <h2 class="text-xl font-semibold text-white flex items-center">
+                            <i class="fas fa-chart-bar mr-3"></i>
+                            Timeline des Candidatures
+                        </h2>
+                        <p class="text-green-100 text-sm mt-1">Évolution dans le temps</p>
+                    </div>
+                    <div class="p-6 flex items-center justify-center h-full">
+                        <div class="text-center text-gray-500">
+                            <i class="fas fa-plus-circle text-4xl mb-3"></i>
+                            <p>Dashboard à venir</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fade-in">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden h-96">
+                    <div class="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4">
+                        <h2 class="text-xl font-semibold text-white flex items-center">
+                            <i class="fas fa-chart-pie mr-3"></i>
+                            Secteurs d'Activité
+                        </h2>
+                        <p class="text-purple-100 text-sm mt-1">Répartition par secteur</p>
+                    </div>
+                    <div class="p-6 flex items-center justify-center h-full">
+                        <div class="text-center text-gray-500">
+                            <i class="fas fa-plus-circle text-4xl mb-3"></i>
+                            <p>Dashboard à venir</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="mt-12 text-center text-gray-600 fade-in">
+            <p class="text-sm">
+                <i class="fas fa-info-circle mr-1"></i>
+                Les données sont actualisées automatiquement depuis Google Sheets
+            </p>
+        </div>
+    </main>
+
+    <script>
+        // Fonction pour afficher les dashboards Plotly
+        function renderPlotlyDashboard(containerId, figure) {
+            const container = document.getElementById(containerId);
+            if (container && figure) {
+                // Configuration Plotly
+                const config = {
+                    responsive: true,
+                    displayModeBar: true,
+                    modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+                    displaylogo: false,
+                    toImageButtonOptions: {
+                        format: 'png',
+                        filename: 'dashboard_export',
+                        height: 500,
+                        width: 700,
+                        scale: 1
+                    }
+                };
+                
+                // Layout responsive
+                figure.layout = {
+                    ...figure.layout,
+                    autosize: true,
+                    margin: { l: 0, r: 0, t: 20, b: 0 },
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)',
+                    font: {
+                        family: 'Inter, system-ui, sans-serif',
+                        size: 12,
+                        color: '#374151'
+                    }
+                };
+                
+                Plotly.newPlot(container, figure.data, figure.layout, config);
+            }
+        }
+        
+        // Calculer et afficher les statistiques
+        function updateStatistics(data) {
+            // Ces valeurs seraient calculées côté serveur Django
+            document.getElementById('totalApplications').textContent = '{{ map_figures.stats.total|default:"0" }}';
+            document.getElementById('uniqueCities').textContent = '{{ map_figures.stats.cities|default:"0" }}';
+            document.getElementById('thisWeek').textContent = '{{ map_figures.stats.week|default:"0" }}';
+        }
+        
+        // Fonction de rafraîchissement
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            const btn = this;
+            const icon = btn.querySelector('i');
+            
+            // Animation de chargement
+            icon.classList.add('fa-spin');
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            
+            // Simuler le rechargement
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        });
+        
+        // Initialisation quand le DOM est chargé
+        document.addEventListener('DOMContentLoaded', function() {
+            // Afficher la carte si disponible
+            {% if map_figures.map %}
+            const mapFigure = {{ map_figures.map|safe }};
+            renderPlotlyDashboard('mapDashboard', mapFigure);
+            {% endif %}
+            
+            // Mettre à jour les statistiques
+            updateStatistics();
+            
+            // Animation d'apparition progressive
+            const cards = document.querySelectorAll('.fade-in');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+        
+        // Responsive handling pour Plotly
+        window.addEventListener('resize', function() {
+            const plotlyDivs = document.querySelectorAll('[id$="Dashboard"]');
+            plotlyDivs.forEach(div => {
+                if (div.data) {
+                    Plotly.Plots.resize(div);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
