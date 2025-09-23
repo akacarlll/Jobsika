@@ -128,7 +128,7 @@ GOOGLE_SHEETS_SCOPES = [
 ]
 
 # Redirect URI (ajustez selon votre domaine)
-GOOGLE_REDIRECT_URI = "http://127.0.0.1:8000/auth/google/callback/"
+GOOGLE_REDIRECT_URI = os.environ["GOOGLE_REDIRECT_URI"]  
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
