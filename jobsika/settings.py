@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "jobs_engine",
     "home_page",
+    "dashboard_engine",
 ]
 
 MIDDLEWARE = [

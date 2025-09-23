@@ -22,5 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('jobs_engine.urls')),
     path("", include("home_page.urls")),
-
+    path("", include("dashboard_engine.urls")),
 ]
