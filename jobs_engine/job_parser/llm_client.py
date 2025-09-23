@@ -78,8 +78,7 @@ class LLMClient:
         if cleaned_text.startswith("```json") and cleaned_text.endswith("```"):
             cleaned_text = cleaned_text[7:-3].strip()
 
-        parsed_json = json.loads(cleaned_text)
-        return parsed_json
+        return json.loads(cleaned_text)
 
     def _call_together_ai(
         self,
@@ -110,8 +109,12 @@ class LLMClient:
         response.raise_for_status()
 
         data = response.json()
+        text = data["choices"][0]["message"]["content"]
+        cleaned_text = text.strip()
+        if cleaned_text.startswith("```json") and cleaned_text.endswith("```"):
+            cleaned_text = cleaned_text[7:-3].strip()
+        return json.loads(cleaned_text)
 
-        return data
 
     def generate(
         self,
