@@ -15,7 +15,7 @@ import os
 
 # TODO: To Remove find a way to correctly export env variables
 from dotenv import load_dotenv
-assert load_dotenv(".env")
+load_dotenv(".env")
 
 SHEETS_SCRIPT_URL = os.getenv("SHEETS_SCRIPT_URL")
 SHEETS_SECRET = os.getenv("SHEETS_SECRET")
