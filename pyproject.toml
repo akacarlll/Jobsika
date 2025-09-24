@@ -1,15 +1,17 @@
 [tool.ruff]
+
 # Maximum line length
-line-length = 88
+line-length = 120
+
+# File type to exclude from linting
+exclude = [".ipynb", ".docx"]
 
 # Target Python version
-target-version = "py310"
+target-version = "py313"
 
-# Enable all rules by default
-lint.select = ["E", "F", "W", "C", "B", "RUF"]
-
-# Ignore specific rules if needed
-lint.ignore = ["E501"]  # example: ignore line-length warnings
+# Select all linting rules
+[tool.ruff.lint]
+select = ["E", "F", "W", "C", "B", "RUF"]
 
 # Optional: show verbose output
 # verbose = true
