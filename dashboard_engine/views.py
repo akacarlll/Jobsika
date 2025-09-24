@@ -22,7 +22,8 @@ class DashboardView(View):
 
         context = {
             "map_figures": {
-                "map": json.dumps(map_figures),
+                "map": map_figures["map"],
+                "skills_pie": map_figures["skills_pie"],
                 "stats": {
                     "total": len(dashboards_creator.job_application_df),
                     "cities": dashboards_creator.job_application_df[

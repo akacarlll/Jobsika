@@ -17,7 +17,7 @@ class DashboardCreator:
         """
         self.job_application_df = pd.DataFrame(job_application_data)
 
-    def create_map_dashboard(self):
+    def create_map_dashboard(self)-> str:
         """
         Create a map dashboard visualizing job applications by city location.
 
@@ -71,7 +71,39 @@ class DashboardCreator:
 
         return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
-    # def create
+
+    def plot_skills_pie(self, col: str ="Skills Required", top_n: int = 20) -> str:
+        """
+        Create a pie chart visualization of the most requested skills.
+
+        Args:
+            col (str): Column name containing the skills.
+            top_n (int): The number of skills to display.
+
+        Returns:
+            str: JSON-encoded Plotly figure.
+        """
+        skills_series = self.job_application_df[col].dropna().apply(lambda x: [s.strip() for s in x.split(",")])
+        
+        all_skills = [skill for sublist in skills_series for skill in sublist if skill]
+
+        skill_counts = pd.Series(all_skills).value_counts().reset_index()
+        skill_counts.columns = ["Skill", "Count"]
+        if len(skill_counts) > top_n:
+            top_skills = skill_counts[:top_n]
+            autres = pd.Series({"Autres": skill_counts[top_n:].sum()})
+            skill_counts = pd.concat([top_skills, autres])
+
+        fig = px.pie(
+            skill_counts,
+            names="Skill",
+            values="Count",
+            title="Compétences les plus demandées",
+            hole=0.2
+        )
+
+        fig.update_traces(textposition="inside", textinfo="percent+label")
+        return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
     def create_all_dashboards(self) -> dict:
         """
@@ -80,4 +112,5 @@ class DashboardCreator:
         Returns:
             dict: Dictionary containing all generated dashboards.
         """
-        return {"map": self.create_map_dashboard()}
+        return {"map": self.create_map_dashboard(),
+                "skills_pie": self.plot_skills_pie()}
