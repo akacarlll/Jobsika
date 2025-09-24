@@ -2,7 +2,7 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #8d98c7 0%, #7e7e8d 100%);
     min-height: 100vh;
 }
 
@@ -80,13 +80,9 @@ h1 {
     font-size: 18px;
     font-weight: 600;
     color: #333;
-    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    align-items: center;
 }
 
 .google-btn:hover {
@@ -102,11 +98,12 @@ h1 {
 
 .auth-description {
     text-align: center;
-    color: #666;
+    color: #000000;
     margin-bottom: 30px;
     font-size: 16px;
     line-height: 1.5;
 }
+
 
 .features {
     display: grid;
