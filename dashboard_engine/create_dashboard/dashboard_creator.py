@@ -104,6 +104,116 @@ class DashboardCreator:
 
         fig.update_traces(textposition="inside", textinfo="percent+label")
         return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    
+    def create_comprehensive_timeline_dashboard(self) -> dict:
+        """Create multiple date-based visualizations."""
+        df = self.job_application_df.copy()
+        df['Date Applied'] = pd.to_datetime(df['Date Applied'])
+        
+        daily_apps = df.groupby(df['Date Applied'].dt.date).size().reset_index()
+        daily_apps.columns = ['Date', 'Applications']
+        
+        timeline_fig = px.line(
+            daily_apps, 
+            x='Date', 
+            y='Applications',
+            title='Évolution quotidienne des candidatures',
+            markers=True
+        )
+        timeline_fig.update_layout(
+            xaxis_title="Date",
+            yaxis_title="Candidatures",
+            showlegend=False
+        )
+        
+        df['Hour'] = df['Date Applied'].dt.hour
+        hourly_dist = df['Hour'].value_counts().sort_index().reset_index()
+        hourly_dist.columns = ['Heure', 'Candidatures']
+        
+        hourly_fig = px.bar(
+            hourly_dist,
+            x='Heure',
+            y='Candidatures',
+            title='Distribution par heure de la journée'
+        )
+        hourly_fig.update_layout(
+            xaxis_title="Heure",
+            yaxis_title="Nombre de candidatures",
+            showlegend=False
+        )
+        
+        df['DayOfWeek'] = df['Date Applied'].dt.day_name()
+        day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        day_fr = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+        
+        daily_dist = df['DayOfWeek'].value_counts().reindex(day_order).reset_index()
+        daily_dist.columns = ['Day', 'Candidatures']
+        daily_dist['Jour'] = day_fr
+        
+        daily_fig = px.bar(
+            daily_dist,
+            x='Jour',
+            y='Candidatures',
+            title='Distribution par jour de la semaine'
+        )
+        
+        df['Month'] = df['Date Applied'].dt.to_period('M').astype(str)
+        monthly_apps = df.groupby('Month').size().reset_index()
+        monthly_apps.columns = ['Mois', 'Applications']
+        
+        monthly_fig = px.bar(
+            monthly_apps,
+            x='Mois',
+            y='Applications',
+            title='Candidatures par mois'
+        )
+        monthly_fig.update_layout(xaxis_tickangle=-45)
+        
+        daily_apps_sorted = daily_apps.sort_values('Date')
+        daily_apps_sorted['Cumulative'] = daily_apps_sorted['Applications'].cumsum()
+        
+        cumulative_fig = px.area(
+            daily_apps_sorted,
+            x='Date',
+            y='Cumulative',
+            title='Candidatures cumulées'
+        )
+        cumulative_fig.update_layout(
+            xaxis_title="Date",
+            yaxis_title="Candidatures cumulées",
+            showlegend=False
+        )
+        
+        return {
+            "timeline": json.dumps(timeline_fig, cls=plotly.utils.PlotlyJSONEncoder),
+            "hourly": json.dumps(hourly_fig, cls=plotly.utils.PlotlyJSONEncoder),
+            "daily": json.dumps(daily_fig, cls=plotly.utils.PlotlyJSONEncoder),
+            "monthly": json.dumps(monthly_fig, cls=plotly.utils.PlotlyJSONEncoder),
+            "cumulative": json.dumps(cumulative_fig, cls=plotly.utils.PlotlyJSONEncoder)
+        }
+
+    def calculate_date_statistics(self) -> dict:
+        """Calculate useful statistics from date data."""
+        df = self.job_application_df.copy()
+        df['Date Applied'] = pd.to_datetime(df['Date Applied'])
+        
+        current_week = df[df['Date Applied'] >= df['Date Applied'].max() - pd.Timedelta(days=7)]
+        
+        most_active_hour = df['Date Applied'].dt.hour.mode().iloc[0]
+        most_active_day = df['Date Applied'].dt.day_name().mode().iloc[0]
+        
+        date_range = (df['Date Applied'].max() - df['Date Applied'].min()).days + 1
+        avg_per_day = len(df) / date_range if date_range > 0 else 0
+        
+        return {
+            "current_week": len(current_week),
+            "most_active_hour": f"{most_active_hour}h",
+            "most_active_day": most_active_day,
+            "avg_per_day": round(avg_per_day, 1),
+            "total_days": date_range,
+            "first_application": df['Date Applied'].min().strftime('%d/%m/%Y'),
+            "last_application": df['Date Applied'].max().strftime('%d/%m/%Y')
+        }
 
     def create_all_dashboards(self) -> dict:
         """
@@ -112,5 +222,9 @@ class DashboardCreator:
         Returns:
             dict: Dictionary containing all generated dashboards.
         """
-        return {"map": self.create_map_dashboard(),
-                "skills_pie": self.plot_skills_pie()}
+        return {
+            "map": self.create_map_dashboard(),
+            "skills_pie": self.plot_skills_pie(),
+            "timeline_dashboards": self.create_comprehensive_timeline_dashboard(),
+            "date_stats": self.calculate_date_statistics()
+        }

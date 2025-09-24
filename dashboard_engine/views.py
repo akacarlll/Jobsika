@@ -18,19 +18,21 @@ class DashboardView(View):
         """
         response = requests.get(settings.SHEETS_SCRIPT_URL)
         dashboards_creator = DashboardCreator(response.json())
-        map_figures = dashboards_creator.create_all_dashboards()
+        dashboards = dashboards_creator.create_all_dashboards()
 
         context = {
-            "map_figures": {
-                "map": map_figures["map"],
-                "skills_pie": map_figures["skills_pie"],
+            "dashboards": {
+                "map": dashboards["map"],
+                "skills_pie": dashboards["skills_pie"],
+                "timeline": dashboards["timeline_dashboards"],
                 "stats": {
                     "total": len(dashboards_creator.job_application_df),
                     "cities": dashboards_creator.job_application_df[
                         "Location"
                     ].nunique(),
-                    "week": 0,
+                    "week": dashboards["date_stats"]["current_week"],
                 },
+                "date_stats": dashboards["date_stats"]
             }
         }
 
