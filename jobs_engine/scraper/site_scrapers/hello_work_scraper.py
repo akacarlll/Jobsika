@@ -1,13 +1,21 @@
-import requests
-from bs4 import BeautifulSoup
 import random
 
+import requests
+from bs4 import BeautifulSoup
+
 from ..base_scraper import JobScraper
+
 
 class HelloWorkScraper(JobScraper):
     """Scraper for Hello Work job offers"""
 
     def __init__(self, url):
+        """
+        Initializes the HelloWorkScraper with an URL.
+
+        Args:
+            url (str): The URL of the job posting to scrape.
+        """
         self.url = url
 
     def scrape_job(self) -> str:
@@ -27,6 +35,12 @@ class HelloWorkScraper(JobScraper):
         return job_description_div.get_text(separator="\n", strip=True) # type: ignore
 
     def get_random_header(self)-> dict:
+        """
+        Generates a random header to mimic different browsers.
+
+        Returns:
+            dict: A dictionary containing HTTP headers.
+        """
         user_agents = [
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)"
             " Chrome/120.0.0.0 Safari/537.36",

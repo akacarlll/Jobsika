@@ -1,9 +1,11 @@
 """This module is used to create a Job offer text parser using LLMs."""
 
-import os
-import requests
-from typing import Optional
 import json
+import os
+from typing import Optional
+
+import requests
+
 
 class LLMClient:
     """A client to interact with multiple LLM APIs."""

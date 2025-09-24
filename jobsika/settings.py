@@ -10,11 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 # TODO: To Remove find a way to correctly export env variables
 from dotenv import load_dotenv
+
 load_dotenv(".env")
 
 SHEETS_SCRIPT_URL = os.getenv("SHEETS_SCRIPT_URL")
@@ -57,7 +58,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware", 
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = "jobsika.urls"
@@ -129,7 +130,7 @@ GOOGLE_SHEETS_SCOPES = [
 ]
 
 # Redirect URI (ajustez selon votre domaine)
-GOOGLE_REDIRECT_URI = os.environ["GOOGLE_REDIRECT_URI"]  
+GOOGLE_REDIRECT_URI = os.environ["GOOGLE_REDIRECT_URI"]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

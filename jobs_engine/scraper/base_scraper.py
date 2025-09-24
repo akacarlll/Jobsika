@@ -1,25 +1,31 @@
 """This module is used to contain the base class for scraper"""
 
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
 
 class JobScraper:
     """Base class for job scrapers"""
 
-    def __init__(self, url):
+    def __init__(self, url:str):
+        """
+        Initializes the Jobscraper with an URL and the webdriver.
+
+        Args:
+            url (str): The URL of the job posting to scrape.
+        """
         self.url = url
         self.driver = self.setup_webdriver()
 
     def setup_webdriver(self) -> webdriver.Chrome:
         """Sets up the Selenium WebDriver with download preferences.
 
-                Returns:
-                    WebDriver: The configured Chrome WebDriver instance.
+            Returns:
+                WebDriver: The configured Chrome WebDriver instance.
         """
         options = webdriver.ChromeOptions()
         options.add_argument("--start-maximized")

@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import HomeView, GoogleAuthCallbackView
+
+from .views import GoogleAuthCallbackView, HomeView
 
 app_name = "home_page"
 

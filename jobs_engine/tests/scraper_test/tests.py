@@ -1,6 +1,8 @@
 from django.test import TestCase
-from jobs_engine.scraper import JobScraper
 from selenium import webdriver
+
+from jobs_engine.scraper import JobScraper
+
 
 class TestJobScraper(TestCase):
     def test_selenium_scraper(self):
