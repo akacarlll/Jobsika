@@ -20,7 +20,7 @@ load_dotenv(".env")
 
 SHEETS_SCRIPT_URL = os.getenv("SHEETS_SCRIPT_URL")
 SHEETS_SECRET = os.getenv("SHEETS_SECRET")
-
+MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN")
 # Build paths inside the project like this: BASE_DIR / "subdir".
 BASE_DIR = Path(__file__).resolve().parent.parent
 

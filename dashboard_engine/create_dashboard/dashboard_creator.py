@@ -3,6 +3,7 @@ import json
 import pandas as pd
 import plotly
 import plotly.express as px
+from django.conf import settings
 
 
 class DashboardCreator:
@@ -17,59 +18,95 @@ class DashboardCreator:
         """
         self.job_application_df = pd.DataFrame(job_application_data)
 
-    def create_map_dashboard(self)-> str:
+    def create_map_dashboard(self) -> str:
         """
         Create a map dashboard visualizing job applications by city location.
-
+        
         Returns:
             str: JSON-encoded Plotly figure.
         """
         french_city_location = pd.read_csv("data/french_city_location.csv")
-
-        latitudes = []
-        longitudes = []
+        
+        # Clean and prepare data
+        locations_data = []
+        
         for city in self.job_application_df["Location"].values:
-            if city in french_city_location["city"].values:
-                latitudes.append(
-                    french_city_location.loc[
-                        french_city_location["city"] == city, "lat"
-                    ].values[0]
-                )
-                longitudes.append(
-                    french_city_location.loc[
-                        french_city_location["city"] == city, "lng"
-                    ].values[0]
-                )
+            if pd.isna(city):  # Skip NaN values
+                continue
+                
+            city_stripped = str(city).strip()
+            
+            city_clean = city_stripped.split(',')[0].strip()
+            city_clean = city_clean.replace(' (occasional remote work)', '').strip()
+            
+            city_match = french_city_location[french_city_location["city"] == city_clean]
+            
+            
+            if not city_match.empty:
+                locations_data.append({
+                    "city": city_stripped,  # Keep original for display
+                    "city_clean": city_clean,  # For grouping
+                    "lat": float(city_match.iloc[0]["lat"]),
+                    "lng": float(city_match.iloc[0]["lng"])  # Keep as 'lng' to match CSV
+                })
+                print(f"Found coordinates for: {city_clean} -> {city_match.iloc[0]['lat']}, {city_match.iloc[0]['lng']}")
             else:
-                latitudes.append(None)
-                longitudes.append(None)
+                print(f"City not found in coordinates: {city_clean} from: ({city_stripped})")
 
-        df = pd.DataFrame(
-            {
-                "city": self.job_application_df["Location"].values,
-                "lat": latitudes,
-                "lon": longitudes,
-            }
-        )
-
-        df_grouped = df.groupby(["city", "lat", "lon"], as_index=False).size()
+        # Create DataFrame with correct column names
+        df = pd.DataFrame(locations_data)
+        
+        # Group by cleaned city name and coordinates
+        df_grouped = df.groupby(["city_clean", "lat", "lng"], as_index=False).size()
         df_grouped.rename(columns={"size": "count"}, inplace=True)
+        
+        print(df_grouped)
 
+        df_grouped = df_grouped.dropna(subset=['lat', 'lng'])
+
+        px.set_mapbox_access_token(settings.MAPBOX_TOKEN)
+        # Create the map - NOTE: Using 'lng' to match your CSV column name
         fig = px.scatter_mapbox(
             df_grouped,
             lat="lat",
-            lon="lon",
-            hover_name="city",
+            lon="lng",
+            hover_name="city_clean",
             size="count",
             color="count",
-            zoom=4,
+            zoom=6,
             height=500,
-            color_continuous_scale=px.colors.cyclical.IceFire,
+            color_continuous_scale="Viridis",
+            size_max=30,
+            title="Répartition géographique des candidatures"
         )
 
-        fig.update_layout(mapbox_style="open-street-map")
+        # Update layout for better visibility with free tile provider
+        # fig.update_layout(
+        #     mapbox_style="open-street-map",   # ✅ Free basemap, no token
+        #     mapbox=dict(
+        #         center=dict(lat=48.8566, lon=2.3522),  # Center on Paris
+        #         zoom=6
+        #     ),
+        #     margin={"r": 0, "t": 30, "l": 0, "b": 0},
+        #     showlegend=False
+        # )
+        fig.update_layout(
+            mapbox_style="mapbox://styles/mapbox/streets-v11"
+        )
 
+
+        # Ensure markers are visible
+        fig.update_traces(
+            marker=dict(
+                sizemin=10,
+                opacity=0.8,
+                # line=dict(width=1, color='white')
+            )
+        )
+        
+        print("Map created successfully")
         return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
 
 
     def plot_skills_pie(self, col: str ="Skills Required", top_n: int = 20) -> str:
@@ -157,32 +194,36 @@ class DashboardCreator:
             title='Distribution par jour de la semaine'
         )
         
-        df['Month'] = df['Date Applied'].dt.to_period('M').astype(str)
+        df['Month'] = df['Date Applied'].dt.to_period('M').dt.to_timestamp()
         monthly_apps = df.groupby('Month').size().reset_index()
         monthly_apps.columns = ['Mois', 'Applications']
-        
+
         monthly_fig = px.bar(
             monthly_apps,
             x='Mois',
             y='Applications',
             title='Candidatures par mois'
         )
+        monthly_fig.update_layout(
+            xaxis_tickformat="%b %Y",
+            xaxis_tickangle=-45
+        )
+
         monthly_fig.update_layout(xaxis_tickangle=-45)
         
+        daily_apps = df.groupby(df['Date Applied'].dt.floor("D")).size().reset_index()
+        daily_apps.columns = ['Date', 'Applications']
+
         daily_apps_sorted = daily_apps.sort_values('Date')
         daily_apps_sorted['Cumulative'] = daily_apps_sorted['Applications'].cumsum()
-        
+
         cumulative_fig = px.area(
             daily_apps_sorted,
             x='Date',
             y='Cumulative',
             title='Candidatures cumulées'
         )
-        cumulative_fig.update_layout(
-            xaxis_title="Date",
-            yaxis_title="Candidatures cumulées",
-            showlegend=False
-        )
+
         
         return {
             "timeline": json.dumps(timeline_fig, cls=plotly.utils.PlotlyJSONEncoder),
@@ -225,6 +266,7 @@ class DashboardCreator:
         Returns:
             dict: Dictionary containing all generated dashboards.
         """
+
         return {
             "map": self.create_map_dashboard(),
             "skills_pie": self.plot_skills_pie(),
