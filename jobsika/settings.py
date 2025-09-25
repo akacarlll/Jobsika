@@ -152,7 +152,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'statifiles')
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "jobs_engine/static/",
-    BASE_DIR / "home_page/static/"
+    BASE_DIR / "home_page/static/",
+    BASE_DIR / "dashboard_engine/static/"
 ]
 
 # Default primary key field type
