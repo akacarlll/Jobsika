@@ -47,6 +47,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('job_url').setAttribute('required', 'required');
 });
 
+function gotoDashboardPage() {
+  window.location.href = goToDashboardUrl;  
+}
 function disconnect() {
   if (confirm('Voulez-vous vraiment vous déconnecter de Google ?')) {
     // This is the URL for your disconnect view

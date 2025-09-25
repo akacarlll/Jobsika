@@ -11,6 +11,9 @@
 <button onclick="disconnect()" class="btn btn-danger" id="disconnect_button">
     Se déconnecter
 </button>
+<button onclick="gotoDashboardPage()" class="btn btn-danger" id="dashboard_button">
+    Dashboards
+</button>
 <body>
     <div id="jobForm" class="job-form">
         <h2 id="formTitle">📝 Ajouter une offre d'emploi</h2>
@@ -107,6 +110,7 @@
     </div>
     <script>
     const disconnectEndpointUrl = '{% url "jobs_engine:disconnect" %}';
+    const goToDashboardUrl = '{% url "dashboard_engine:dashboard" %}';
     </script>
     <script src="{% static 'js/functions.js' %}"></script>
 </body>
