@@ -138,7 +138,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-600 mb-1">Taux de Réponse</p>
-                        <p class="text-3xl font-bold text-gray-900">23%</p>
+                        <p class="text-3xl font-bold text-gray-900" id="responseRate">-</p>
                     </div>
                     <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                         <i class="fas fa-chart-pie text-orange-600 text-xl"></i>
@@ -160,12 +160,7 @@
                         <p class="text-blue-100 text-sm mt-1">Distribution des candidatures par ville</p>
                     </div>
                     <div class="p-6">
-                        <div class="plotly-container" id="mapDashboard">
-                            <div class="flex items-center justify-center h-96">
-                                <div class="loading-spinner"></div>
-                                <span class="ml-3 text-gray-600">Chargement de la carte...</span>
-                            </div>
-                        </div>
+                        <div class="plotly-container" id="mapDashboard"></div>
                     </div>
                 </div>
             </div>
@@ -181,10 +176,22 @@
                         <p class="text-green-100 text-sm mt-1">Évolution dans le temps</p>
                     </div>
                     <div class="p-6 flex items-center justify-center h-full">
-                        <div class="text-center text-gray-500">
-                            <i class="fas fa-plus-circle text-4xl mb-3"></i>
-                            <p>Dashboard à venir</p>
-                        </div>
+                        <div class="plotly-container" id="hourlyDashboard"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fade-in">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden h-96">
+                    <div class="bg-gradient-to-r from-green-500 to-teal-600 px-6 py-4">
+                        <h2 class="text-xl font-semibold text-white flex items-center">
+                            <i class="fas fa-chart-bar mr-3"></i>
+                            Timeline des Candidatures
+                        </h2>
+                        <p class="text-green-100 text-sm mt-1">Évolution dans le temps</p>
+                    </div>
+                    <div class="p-6 flex items-center justify-center h-full">
+                        <div class="plotly-container" id="dailyDashboard"></div>
                     </div>
                 </div>
             </div>
@@ -200,10 +207,6 @@
                     </div>
                     <div class="p-6">
                         <div class="plotly-container" id="skillsPieDashboard">
-                            <div class="flex items-center justify-center h-72">
-                                <div class="loading-spinner"></div>
-                                <span class="ml-3 text-gray-600">Chargement du graphique...</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -256,12 +259,12 @@
             }
         }
         
-        // Calculer et afficher les statistiques
         function updateStatistics(data) {
-            // Ces valeurs seraient calculées côté serveur Django
-            document.getElementById('totalApplications').textContent = '{{ map_figures.stats.total|default:"0" }}';
-            document.getElementById('uniqueCities').textContent = '{{ map_figures.stats.cities|default:"0" }}';
-            document.getElementById('thisWeek').textContent = '{{ map_figures.stats.week|default:"0" }}';
+
+            document.getElementById('totalApplications').textContent = '{{ dashboards.stats.total|default:"6.5" }}';
+            document.getElementById('uniqueCities').textContent = '{{ dashboards.stats.cities|default:"0" }}';
+            document.getElementById('thisWeek').textContent = '{{ dashboards.stats.week|default:"0" }}';
+            document.getElementById('responseRate').textContent = '{{ dashboards.stats.response_rate|default:"0" }}%';
         }
         
         // Fonction de rafraîchissement
@@ -283,15 +286,26 @@
         // Initialisation quand le DOM est chargé
         document.addEventListener('DOMContentLoaded', function() {
             // Afficher la carte si disponible
-            {% if map_figures.map %}
-            const mapFigure = JSON.parse(`{{ map_figures.map|escapejs }}`);
+            {% if dashboards.map %}
+            const mapFigure = JSON.parse(`{{ dashboards.map|escapejs }}`);
             renderPlotlyDashboard('mapDashboard', mapFigure);
             {% endif %}
 
-            {% if map_figures.skills_pie %}
-            const skillsPieFigure = JSON.parse(`{{ map_figures.skills_pie|escapejs }}`);
+            {% if dashboards.skills_pie %}
+            const skillsPieFigure = JSON.parse(`{{ dashboards.skills_pie|escapejs }}`);
             renderPlotlyDashboard('skillsPieDashboard', skillsPieFigure);
             {% endif %}
+     
+            {% if dashboards.timeline_dashboards.hourly %}
+            const hourlyFigure = JSON.parse(`{{ dashboards.timeline_dashboards.hourly|escapejs }}`);
+            renderPlotlyDashboard('hourlyDashboard', hourlyFigure);
+            {% endif %}
+
+            {% if dashboards.timeline_dashboards.daily %}
+            const dailyFigure = JSON.parse(`{{ dashboards.timeline_dashboards.daily|escapejs }}`);
+            renderPlotlyDashboard('dailyDashboard', dailyFigure);
+            {% endif %}
+
 
             
             // Mettre à jour les statistiques

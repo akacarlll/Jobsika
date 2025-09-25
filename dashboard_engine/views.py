@@ -24,15 +24,16 @@ class DashboardView(View):
             "dashboards": {
                 "map": dashboards["map"],
                 "skills_pie": dashboards["skills_pie"],
-                "timeline": dashboards["timeline_dashboards"],
+                "timeline_dashboards": dashboards["timeline_dashboards"],
                 "stats": {
                     "total": len(dashboards_creator.job_application_df),
                     "cities": dashboards_creator.job_application_df[
                         "Location"
                     ].nunique(),
-                    "week": dashboards["date_stats"]["current_week"],
+                    "week": dashboards["general_stats"]["current_week"],
+                    "response_rate": dashboards["general_stats"]["response_rate"]
                 },
-                "date_stats": dashboards["date_stats"]
+                "date_stats": dashboards["general_stats"]
             }
         }
 

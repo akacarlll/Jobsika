@@ -204,6 +204,8 @@ class DashboardCreator:
         
         date_range = (df['Date Applied'].max() - df['Date Applied'].min()).days + 1
         avg_per_day = len(df) / date_range if date_range > 0 else 0
+
+        resp_rate = 1 - len(df) / len(df[df["Status"] == "Applied"])
         
         return {
             "current_week": len(current_week),
@@ -212,7 +214,8 @@ class DashboardCreator:
             "avg_per_day": round(avg_per_day, 1),
             "total_days": date_range,
             "first_application": df['Date Applied'].min().strftime('%d/%m/%Y'),
-            "last_application": df['Date Applied'].max().strftime('%d/%m/%Y')
+            "last_application": df['Date Applied'].max().strftime('%d/%m/%Y'),
+            "response_rate": round(resp_rate * 100, 1) if resp_rate else 0
         }
 
     def create_all_dashboards(self) -> dict:
@@ -226,5 +229,5 @@ class DashboardCreator:
             "map": self.create_map_dashboard(),
             "skills_pie": self.plot_skills_pie(),
             "timeline_dashboards": self.create_comprehensive_timeline_dashboard(),
-            "date_stats": self.calculate_date_statistics()
+            "general_stats": self.calculate_date_statistics()
         }
