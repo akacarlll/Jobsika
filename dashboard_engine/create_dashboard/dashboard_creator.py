@@ -26,46 +26,40 @@ class DashboardCreator:
             str: JSON-encoded Plotly figure.
         """
         french_city_location = pd.read_csv("data/french_city_location.csv")
-        
-        # Clean and prepare data
+
         locations_data = []
-        
+
         for city in self.job_application_df["Location"].values:
-            if pd.isna(city):  # Skip NaN values
+            if pd.isna(city):
                 continue
-                
+
             city_stripped = str(city).strip()
-            
+
             city_clean = city_stripped.split(',')[0].strip()
             city_clean = city_clean.replace(' (occasional remote work)', '').strip()
-            
+
             city_match = french_city_location[french_city_location["city"] == city_clean]
-            
-            
+
+
             if not city_match.empty:
                 locations_data.append({
-                    "city": city_stripped,  # Keep original for display
-                    "city_clean": city_clean,  # For grouping
+                    "city": city_stripped,
+                    "city_clean": city_clean,
                     "lat": float(city_match.iloc[0]["lat"]),
-                    "lng": float(city_match.iloc[0]["lng"])  # Keep as 'lng' to match CSV
+                    "lng": float(city_match.iloc[0]["lng"])
                 })
-                print(f"Found coordinates for: {city_clean} -> {city_match.iloc[0]['lat']}, {city_match.iloc[0]['lng']}")
-            else:
-                print(f"City not found in coordinates: {city_clean} from: ({city_stripped})")
 
-        # Create DataFrame with correct column names
         df = pd.DataFrame(locations_data)
-        
-        # Group by cleaned city name and coordinates
+
         df_grouped = df.groupby(["city_clean", "lat", "lng"], as_index=False).size()
         df_grouped.rename(columns={"size": "count"}, inplace=True)
-        
+
         print(df_grouped)
 
         df_grouped = df_grouped.dropna(subset=['lat', 'lng'])
 
         px.set_mapbox_access_token(settings.MAPBOX_TOKEN)
-        # Create the map - NOTE: Using 'lng' to match your CSV column name
+
         fig = px.scatter_mapbox(
             df_grouped,
             lat="lat",
@@ -80,31 +74,23 @@ class DashboardCreator:
             title="Répartition géographique des candidatures"
         )
 
-        # Update layout for better visibility with free tile provider
-        # fig.update_layout(
-        #     mapbox_style="open-street-map",   # ✅ Free basemap, no token
-        #     mapbox=dict(
-        #         center=dict(lat=48.8566, lon=2.3522),  # Center on Paris
-        #         zoom=6
-        #     ),
-        #     margin={"r": 0, "t": 30, "l": 0, "b": 0},
-        #     showlegend=False
-        # )
         fig.update_layout(
-            mapbox_style="mapbox://styles/mapbox/streets-v11"
+            mapbox_style="open-street-map",
+            mapbox=dict(
+                center=dict(lat=48.8566, lon=2.3522),
+                zoom=6
+            ),
+            margin={"r": 0, "t": 30, "l": 0, "b": 0},
+            showlegend=False
         )
 
-
-        # Ensure markers are visible
         fig.update_traces(
             marker=dict(
                 sizemin=10,
                 opacity=0.8,
-                # line=dict(width=1, color='white')
             )
         )
-        
-        print("Map created successfully")
+
         return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
 
@@ -121,7 +107,7 @@ class DashboardCreator:
             str: JSON-encoded Plotly figure.
         """
         skills_series = self.job_application_df[col].dropna().apply(lambda x: [s.strip() for s in x.split(",")])
-        
+
         all_skills = [skill for sublist in skills_series for skill in sublist if skill]
 
         skill_counts = pd.Series(all_skills).value_counts().reset_index()
@@ -141,18 +127,18 @@ class DashboardCreator:
 
         fig.update_traces(textposition="inside", textinfo="percent+label")
         return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    
+
     def create_comprehensive_timeline_dashboard(self) -> dict:
         """Create multiple date-based visualizations."""
         df = self.job_application_df.copy()
         df['Date Applied'] = pd.to_datetime(df['Date Applied'])
-        
+
         daily_apps = df.groupby(df['Date Applied'].dt.date).size().reset_index()
         daily_apps.columns = ['Date', 'Applications']
-        
+
         timeline_fig = px.line(
-            daily_apps, 
-            x='Date', 
+            daily_apps,
+            x='Date',
             y='Applications',
             title='Évolution quotidienne des candidatures',
             markers=True
@@ -162,11 +148,11 @@ class DashboardCreator:
             yaxis_title="Candidatures",
             showlegend=False
         )
-        
+
         df['Hour'] = df['Date Applied'].dt.hour
         hourly_dist = df['Hour'].value_counts().sort_index().reset_index()
         hourly_dist.columns = ['Heure', 'Candidatures']
-        
+
         hourly_fig = px.bar(
             hourly_dist,
             x='Heure',
@@ -178,22 +164,22 @@ class DashboardCreator:
             yaxis_title="Nombre de candidatures",
             showlegend=False
         )
-        
+
         df['DayOfWeek'] = df['Date Applied'].dt.day_name()
         day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         day_fr = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
-        
+
         daily_dist = df['DayOfWeek'].value_counts().reindex(day_order).reset_index()
         daily_dist.columns = ['Day', 'Candidatures']
         daily_dist['Jour'] = day_fr
-        
+
         daily_fig = px.bar(
             daily_dist,
             x='Jour',
             y='Candidatures',
             title='Distribution par jour de la semaine'
         )
-        
+
         df['Month'] = df['Date Applied'].dt.to_period('M').dt.to_timestamp()
         monthly_apps = df.groupby('Month').size().reset_index()
         monthly_apps.columns = ['Mois', 'Applications']
@@ -210,7 +196,7 @@ class DashboardCreator:
         )
 
         monthly_fig.update_layout(xaxis_tickangle=-45)
-        
+
         daily_apps = df.groupby(df['Date Applied'].dt.floor("D")).size().reset_index()
         daily_apps.columns = ['Date', 'Applications']
 
@@ -224,7 +210,7 @@ class DashboardCreator:
             title='Candidatures cumulées'
         )
 
-        
+
         return {
             "timeline": json.dumps(timeline_fig, cls=plotly.utils.PlotlyJSONEncoder),
             "hourly": json.dumps(hourly_fig, cls=plotly.utils.PlotlyJSONEncoder),
@@ -237,17 +223,17 @@ class DashboardCreator:
         """Calculate useful statistics from date data."""
         df = self.job_application_df.copy()
         df['Date Applied'] = pd.to_datetime(df['Date Applied'])
-        
+
         current_week = df[df['Date Applied'] >= df['Date Applied'].max() - pd.Timedelta(days=7)]
-        
+
         most_active_hour = df['Date Applied'].dt.hour.mode().iloc[0]
         most_active_day = df['Date Applied'].dt.day_name().mode().iloc[0]
-        
+
         date_range = (df['Date Applied'].max() - df['Date Applied'].min()).days + 1
         avg_per_day = len(df) / date_range if date_range > 0 else 0
 
         resp_rate = 1 - len(df) / len(df[df["Status"] == "Applied"])
-        
+
         return {
             "current_week": len(current_week),
             "most_active_hour": f"{most_active_hour}h",

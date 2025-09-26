@@ -2,7 +2,6 @@ from django.urls import path
 
 from .views import DisconnectView, JobPostingView
 
-
 app_name = "jobs_engine"
 
 urlpatterns = [
