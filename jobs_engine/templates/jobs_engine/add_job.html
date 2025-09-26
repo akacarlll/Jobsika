@@ -8,73 +8,76 @@
     <title>Ajouter un Job</title>
 
 </head>
-<button onclick="disconnect()" class="btn btn-danger" id="disconnect_button">
-    Se déconnecter
-</button>
-<button onclick="gotoDashboardPage()" class="btn btn-danger" id="dashboard_button">
-    Dashboards
-</button>
 <body>
-    <div id="jobForm" class="job-form">
-        <h2 id="formTitle">📝 Ajouter une offre d'emploi</h2>
-        <form method="post" action="{% url 'jobs_engine:process_job' %}">
-            {% csrf_token %}
-            
-            <div id="urlSection">
-                <div class="form-group">
-                    <label for="job_url">🔗 URL de l'offre d'emploi :</label>
-                    <input type="url" 
-                        id="job_url" 
-                        name="job_url" 
-                        placeholder="https://example.com/job-posting" 
-                        class="form-input">
-                    <small>Collez l'URL de l'offre d'emploi que vous souhaitez analyser</small>
-                </div>
-            </div>
-            
-            <div id="descriptionSection" class="hidden">
-                <div class="form-group">
-                    <label for="job_description">📄 Description de l'offre d'emploi :</label>
-                    <textarea id="job_description" 
-                            name="job_description" 
-                            placeholder="Collez ou tapez la description complète de l'offre d'emploi ici..." 
-                            class="form-textarea"
-                            rows="10"></textarea>
-                    <small>Copiez-collez la description complète de l'offre d'emploi</small>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="notes">📝 Notes personnelles (optionnel) :</label>
-                <textarea id="notes" 
-                        name="notes" 
-                        placeholder="Vos notes sur cette offre..." 
-                        class="form-textarea"
-                        rows="3"></textarea>
-            </div>
-            
-            <div class="form-actions">
-                <button type="submit" class="submit-btn">
-                    🚀 Analyser et sauvegarder
-                </button>
-                <button type="button" onclick="clearForm()" class="clear-btn">
-                    🗑️ Effacer
-                </button>
-                <button id="change_submit_type" type="button" onclick="toggleSubmitType()" class="toggle-btn">
-                    📝 Saisie manuelle
-                </button>
-            </div>
-        </form>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    <button type="button" class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-        </div>
+    <div class="button-container">
+        <button onclick="disconnect()" class="btn btn-danger" id="disconnect_button">
+            Se déconnecter
+        </button>
+        <button onclick="gotoDashboardPage()" class="btn btn-danger" id="dashboard_button">
+            Dashboards
+        </button>
     </div>
+    <body>
+        <div id="jobForm" class="job-form">
+            <h2 id="formTitle">📝 Ajouter une offre d'emploi</h2>
+            <form method="post" action="{% url 'jobs_engine:process_job' %}">
+                {% csrf_token %}
+                
+                <div id="urlSection">
+                    <div class="form-group">
+                        <label for="job_url">🔗 URL de l'offre d'emploi :</label>
+                        <input type="url" 
+                            id="job_url" 
+                            name="job_url" 
+                            placeholder="https://example.com/job-posting" 
+                            class="form-input">
+                        <small>Collez l'URL de l'offre d'emploi que vous souhaitez analyser</small>
+                    </div>
+                </div>
+                
+                <div id="descriptionSection" class="hidden">
+                    <div class="form-group">
+                        <label for="job_description">📄 Description de l'offre d'emploi :</label>
+                        <textarea id="job_description" 
+                                name="job_description" 
+                                placeholder="Collez ou tapez la description complète de l'offre d'emploi ici..." 
+                                class="form-textarea"
+                                rows="10"></textarea>
+                        <small>Copiez-collez la description complète de l'offre d'emploi</small>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">📝 Notes personnelles (optionnel) :</label>
+                    <textarea id="notes" 
+                            name="notes" 
+                            placeholder="Vos notes sur cette offre..." 
+                            class="form-textarea"
+                            rows="3"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">
+                        🚀 Analyser et sauvegarder
+                    </button>
+                    <button type="button" onclick="clearForm()" class="clear-btn">
+                        🗑️ Effacer
+                    </button>
+                    <button id="change_submit_type" type="button" onclick="toggleSubmitType()" class="toggle-btn">
+                        📝 Saisie manuelle
+                    </button>
+                </div>
+            </form>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        <button type="button" class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            </div>
+        </div>
      <!-- Available Sites Section -->
     <div class="available-sites">
         <h3>🌐 Sites disponibles pour le scraping</h3>

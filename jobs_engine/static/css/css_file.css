@@ -1,3 +1,29 @@
+/* Body and container styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+}
+
 /* Alert styles */
 .close-btn {
     float: right;
@@ -26,31 +52,7 @@
     pointer-events: none;
 }
 
-/* Body and container styles */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #fefeff 100%);
-    margin: 0;
-    padding: 20px;
-    min-height: 100vh;
-}
 
-.container {
-    background: white;
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    text-align: center;
-    max-width: 500px;
-    width: 100%;
-    margin: 0 auto;
-}
-
-h1 {
-    color: #333;
-    margin-bottom: 30px;
-    font-size: 2.5em;
-}
 
 /* Job form styles */
 .job-form {
@@ -145,14 +147,29 @@ h1 {
     transform: translateY(-1px);
 }
 
+.button-container {
+    display: flex;
+    gap: 1rem;
+}
 .btn-danger {
-    background: #0056b3; 
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
+    background-color: #fff;
+    color: #374151; /* text-gray-700 */
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* shadow */
+    transition: all 0.3s ease;
+    transition-property: all;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 25rem;
+}
+
+.btn-danger:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* hover:shadow-md */
+    transform: translateY(-1px);
+
 }
 
 /* Utility classes */
