@@ -6,6 +6,7 @@ function toggleSubmitType() {
     const toggleButton = document.getElementById('change_submit_type');
     const formTitle = document.getElementById('formTitle');
     const jobUrlInput = document.getElementById('job_url');
+    const jobUrlInputForDescription = document.getElementById('job_url_for_description_form');
     const jobDescriptionInput = document.getElementById('job_description');
     
     if (isUrlMode) {
@@ -14,21 +15,27 @@ function toggleSubmitType() {
         descriptionSection.classList.remove('hidden');
         toggleButton.textContent = '🔗 Saisie par URL';
         formTitle.textContent = '📝 Ajouter une description d\'emploi';
+
+        jobUrlInputForDescription.classList.remove('hidden');
         
         // Remove required attribute from URL input and add to description
         jobUrlInput.removeAttribute('required');
         jobDescriptionInput.setAttribute('required', 'required');
+        jobUrlInputForDescription.setAttribute('required', 'required');
         
         isUrlMode = false;
     } else {
         // Switch to URL mode
         descriptionSection.classList.add('hidden');
+        jobUrlInputForDescription.classList.add('hidden');
+
         urlSection.classList.remove('hidden');
         toggleButton.textContent = '📝 Saisie manuelle';
         formTitle.textContent = '📝 Ajouter une offre d\'emploi';
         
         // Remove required attribute from description input and add to URL
         jobDescriptionInput.removeAttribute('required');
+        jobUrlInputForDescription.removeAttribute('required');
         jobUrlInput.setAttribute('required', 'required');
         
         isUrlMode = true;

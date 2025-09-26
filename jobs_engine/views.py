@@ -30,6 +30,8 @@ class JobPostingView(View):
             HttpResponseRedirect: Redirects to the add job form page with a success or error message.
         """
         job_url = request.POST.get("job_url", "")
+        if not job_url:
+            job_url = request.POST.get("job_url_for_description", "")
         job_description = request.POST.get("job_description")
         notes = request.POST.get("notes", "")
         application_processor = JobApplicationProcessor(notes=notes)
@@ -40,6 +42,7 @@ class JobPostingView(View):
             application_processor.url = job_url
             self.data = application_processor.process_job_offer()
         if job_description:
+            application_processor.url = job_url
             self.data = application_processor.process_job_offer(
                 job_description=job_description
             )
