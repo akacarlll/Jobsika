@@ -128,12 +128,12 @@ class DashboardCreator:
         fig.update_traces(textposition="inside", textinfo="percent+label")
         return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
-    def create_comprehensive_timeline_dashboard(self) -> dict:
+    def create_comprehensive_timeline_dashboard(self, date_applied_col: str = "Date Applied") -> dict:
         """Create multiple date-based visualizations."""
         df = self.job_application_df.copy()
-        df['Date Applied'] = pd.to_datetime(df['Date Applied'])
+        df[date_applied_col] = pd.to_datetime(df[date_applied_col])
 
-        daily_apps = df.groupby(df['Date Applied'].dt.date).size().reset_index()
+        daily_apps = df.groupby(df[date_applied_col].dt.date).size().reset_index()
         daily_apps.columns = ['Date', 'Applications']
 
         timeline_fig = px.line(
@@ -149,7 +149,7 @@ class DashboardCreator:
             showlegend=False
         )
 
-        df['Hour'] = df['Date Applied'].dt.hour
+        df['Hour'] = df[date_applied_col].dt.hour
         hourly_dist = df['Hour'].value_counts().sort_index().reset_index()
         hourly_dist.columns = ['Heure', 'Candidatures']
 
@@ -165,7 +165,7 @@ class DashboardCreator:
             showlegend=False
         )
 
-        df['DayOfWeek'] = df['Date Applied'].dt.day_name()
+        df['DayOfWeek'] = df[date_applied_col].dt.day_name()
         day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         day_fr = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
 
@@ -180,7 +180,7 @@ class DashboardCreator:
             title='Distribution par jour de la semaine'
         )
 
-        df['Month'] = df['Date Applied'].dt.to_period('M').dt.to_timestamp()
+        df['Month'] = df[date_applied_col].dt.to_period('M').dt.to_timestamp()
         monthly_apps = df.groupby('Month').size().reset_index()
         monthly_apps.columns = ['Mois', 'Applications']
 
@@ -197,7 +197,7 @@ class DashboardCreator:
 
         monthly_fig.update_layout(xaxis_tickangle=-45)
 
-        daily_apps = df.groupby(df['Date Applied'].dt.floor("D")).size().reset_index()
+        daily_apps = df.groupby(df[date_applied_col].dt.floor("D")).size().reset_index()
         daily_apps.columns = ['Date', 'Applications']
 
         daily_apps_sorted = daily_apps.sort_values('Date')
@@ -219,17 +219,17 @@ class DashboardCreator:
             "cumulative": json.dumps(cumulative_fig, cls=plotly.utils.PlotlyJSONEncoder)
         }
 
-    def calculate_date_statistics(self) -> dict:
+    def calculate_date_statistics(self, date_applied_col: str = "Date Applied") -> dict:
         """Calculate useful statistics from date data."""
         df = self.job_application_df.copy()
-        df['Date Applied'] = pd.to_datetime(df['Date Applied'])
+        df[date_applied_col] = pd.to_datetime(df[date_applied_col])
 
-        current_week = df[df['Date Applied'] >= df['Date Applied'].max() - pd.Timedelta(days=7)]
+        current_week = df[df[date_applied_col] >= df[date_applied_col].max() - pd.Timedelta(days=7)]
 
-        most_active_hour = df['Date Applied'].dt.hour.mode().iloc[0]
-        most_active_day = df['Date Applied'].dt.day_name().mode().iloc[0]
+        most_active_hour = df[date_applied_col].dt.hour.mode().iloc[0]
+        most_active_day = df[date_applied_col].dt.day_name().mode().iloc[0]
 
-        date_range = (df['Date Applied'].max() - df['Date Applied'].min()).days + 1
+        date_range = (df[date_applied_col].max() - df[date_applied_col].min()).days + 1
         avg_per_day = len(df) / date_range if date_range > 0 else 0
 
         resp_rate = 1 - len(df) / len(df[df["Status"] == "Applied"])
