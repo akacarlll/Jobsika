@@ -21,7 +21,7 @@ class DashboardCreator:
     def create_map_dashboard(self) -> str:
         """
         Create a map dashboard visualizing job applications by city location.
-        
+
         Returns:
             str: JSON-encoded Plotly figure.
         """
@@ -76,19 +76,19 @@ class DashboardCreator:
 
         fig.update_layout(
             mapbox_style="open-street-map",
-            mapbox=dict(
-                center=dict(lat=48.8566, lon=2.3522),
-                zoom=6
-            ),
+            mapbox={
+                "center": {"lat": 48.8566, "lon": 2.3522},
+                "zoom": 6
+            },
             margin={"r": 0, "t": 30, "l": 0, "b": 0},
             showlegend=False
         )
 
         fig.update_traces(
-            marker=dict(
-                sizemin=10,
-                opacity=0.8,
-            )
+            marker={
+                "sizemin": 10,
+                "opacity": 0.8,
+            }
         )
 
         return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
