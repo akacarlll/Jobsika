@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY", "")
 
 # SECURITY WARNING: don"t run with debug turned on in production!
 DEBUG = True
@@ -113,8 +113,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Google OAuth Configuration
-GOOGLE_OAUTH2_CLIENT_ID = os.environ["GOOGLE_OAUTH2_CLIENT_ID"]
-GOOGLE_OAUTH2_CLIENT_SECRET = os.environ["GOOGLE_OAUTH2_CLIENT_SECRET"]
+GOOGLE_OAUTH2_CLIENT_ID = os.getenv("GOOGLE_OAUTH2_CLIENT_ID", "")
+GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH2_CLIENT_SECRET", "")
 
 # We need these lines below to allow the Google sign in popup to work.
 SECURE_REFERRER_POLICY = 'no-referrer-when-downgrade'
@@ -129,8 +129,7 @@ GOOGLE_SHEETS_SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets.readonly"
 ]
 
-# Redirect URI (ajustez selon votre domaine)
-GOOGLE_REDIRECT_URI = os.environ["GOOGLE_REDIRECT_URI"]
+GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "")
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
