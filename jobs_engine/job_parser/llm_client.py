@@ -37,7 +37,6 @@ class LLMClient:
         self.temperature = temperature
         self.max_tokens = max_tokens
 
-        # API endpoints
         self.google_endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         self.together_endpoint = "https://api.together.xyz/v1/chat/completions"
 

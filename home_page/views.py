@@ -63,7 +63,7 @@ class GoogleAuthCallbackView(View):
         if code:
             request.session["google_authenticated"] = True
 
-            return redirect(reverse("jobs_engine:add_job"))  # or dashboard
+            return redirect(reverse("jobs_engine:add_job"))
         else:
             error = request.GET.get("error", "Unknown error")
             return render(request, "home_page/auth_error.html", {"error": error})
