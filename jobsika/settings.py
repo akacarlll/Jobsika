@@ -18,9 +18,14 @@ from dotenv import load_dotenv
 
 load_dotenv(".env")
 
-SHEETS_SCRIPT_URL = os.getenv("SHEETS_SCRIPT_URL")
-SHEETS_SECRET = os.getenv("SHEETS_SECRET")
-MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN")
+SHEETS_SCRIPT_URL = os.getenv("SHEETS_SCRIPT_URL", "")
+SHEETS_SECRET = os.getenv("SHEETS_SECRET", "")
+MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN", "")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
+GOOGLE_ENDPOINT = os.getenv("GOOGLE_ENDPOINT", "")
+TOGETHER_AI_ENDPOINT = os.getenv("TOGETHER_ENDPOINT", "")
+TOGETHER_AI_API_KEY = os.getenv("TOGETHER_AI_API_KEY", "")
+
 # Build paths inside the project like this: BASE_DIR / "subdir".
 BASE_DIR = Path(__file__).resolve().parent.parent
 
