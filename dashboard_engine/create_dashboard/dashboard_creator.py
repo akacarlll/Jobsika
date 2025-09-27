@@ -54,8 +54,6 @@ class DashboardCreator:
         df_grouped = df.groupby(["city_clean", "lat", "lng"], as_index=False).size()
         df_grouped.rename(columns={"size": "count"}, inplace=True)
 
-        print(df_grouped)
-
         df_grouped = df_grouped.dropna(subset=['lat', 'lng'])
 
         px.set_mapbox_access_token(settings.MAPBOX_TOKEN)
