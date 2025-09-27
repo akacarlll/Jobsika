@@ -1,10 +1,11 @@
 """Main entry point for the job scraping and parsing application."""
 
-from .scraper import JobScraper
-from .job_parser.llm_client import LLMClient
-from datetime import datetime
-from .params import SCRAPERS_DICT, AVAILABLE_SITE_FOR_SCRAPING
 import logging
+from datetime import datetime
+
+from .job_parser.llm_client import LLMClient
+from .params import AVAILABLE_SITE_FOR_SCRAPING, SCRAPERS_DICT
+from .scraper import JobScraper
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +13,12 @@ class JobApplicationProcessor:
     """Processes job applications by scraping and parsing job offers."""
 
     def __init__(self, notes:str):
+        """
+        Initializes the JobApplicationProcessor with the notes arguments and the LLM client
+
+        Args:
+            notes (str): The notes added by the user to the job offer.
+        """
         self.notes = notes
         self.url = ""
         self.parser = LLMClient()
@@ -20,6 +27,8 @@ class JobApplicationProcessor:
         """
         Creates a prompt for the LLM based on the job text.
 
+        Args:
+            job_description (str): The job description text.
         Return:
             str: The formatted prompt for the LLM.
         """
@@ -29,7 +38,8 @@ class JobApplicationProcessor:
             1. Job Title: The title of the job position.
             2. Company Name: The name of the company offering the job.
             3. Location: The job's location (city, state, country, or remote).
-            4. Required Skills: A list of specific skills or qualifications required (e.g., ["Python", "SQL", "Docker"]).
+            4. Required Skills: A list of specific skills or qualifications required
+                (e.g., ["Python", "SQL", "Docker"]).
             5. Job Description Summary: A concise summary of the job responsibilities and role (2-3 sentences).
             6. Salary: The salary or compensation range, if explicitly stated.
             7. Contact Information: Any contact details provided for application or inquiries.
@@ -39,20 +49,20 @@ class JobApplicationProcessor:
             {job_description}
 
             Please format the output as a JSON object with keys:
-            'job_title', 'company_name', 'location', 'required_skills', 'job_description_summary', 'salary', 'contact_information'.
+            'job_title', 'company_name', 'location', 'required_skills', 'job_description_summary',
+            'salary', 'contact_information'.
 
             If any information is missing or unclear, use the following rules:
-            - For 'job_title', 'company_name', 'location', and 'job_description_summary', provide an empty string ("") if not found.
-            - For 'required_skills', provide an empty list ([]) if not found.
-            - For 'salary', provide null if not found or if the salary is not explicitly stated.
+            - Provide and empty string ("") if not found for every values.
         """
         return template.format(job_description=job_description)
 
     def get_site_to_scrape(self)-> str:
-        """_summary_
+        """
+        Determines which site scraper to use based on the URL.
 
         Returns:
-            str: _description_
+            str: The key corresponding to the scraper in SCRAPERS_DICT.
         """
         for available_site in AVAILABLE_SITE_FOR_SCRAPING:
             if available_site in self.url:
@@ -60,10 +70,11 @@ class JobApplicationProcessor:
         return "unknown"
 
     def run_scraper(self) -> str:
-        """_summary_
+        """
+        Runs the appropriate scraper based on the URL.
 
         Returns:
-            JobScraper: _description_
+            str: The scraped job description text.
         """
         scraper : JobScraper = SCRAPERS_DICT[self.get_site_to_scrape()](url=self.url)
         return scraper.scrape_job()
@@ -88,10 +99,11 @@ class JobApplicationProcessor:
 
 
     def add_element_to_job_offer(self) -> dict:
-        """_summary_
+        """
+        Adds additional elements to the job offer dictionary such as the application date, URL, and notes.
 
         Returns:
-            dict: _description_
+            dict: A dict containaing the information from the Job post.
         """
         now = datetime.now()
         self.job_offer_dict["application_date"] = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -108,10 +120,10 @@ class JobApplicationProcessor:
         As the LLM aren't deteministic, they can output string or list even if we ask for a string.
 
         Args:
-            potential_list (str | list): _description_
+            potential_list (str | list): The required skills found by the LLM.
 
         Returns:
-            str: _description_
+            str: The required skills as a comma-separated string.
         """
         if isinstance(potential_list, list):
             return ", ".join(potential_list)

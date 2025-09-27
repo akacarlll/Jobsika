@@ -1,7 +1,5 @@
-from jobs_engine.scraper.site_scrapers import WelcomeToTheJungleScraper, HelloWorkScraper
 from jobs_engine.scraper import JobScraper
-
-
+from jobs_engine.scraper.site_scrapers import HelloWorkScraper, WelcomeToTheJungleScraper
 
 SCRAPERS_DICT = {"welcometothejungle": WelcomeToTheJungleScraper,
                  "hellowork": HelloWorkScraper,

@@ -2,14 +2,23 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
     min-height: 100vh;
+}
+
+.top_title {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #ffffff;
+    min-height: 80px;
+    border-bottom: 1px solid #e9faf7;
+    padding: 20px;
+    box-sizing: border-box; 
 }
 
 .hero-section {
     text-align: center;
     padding: 60px 20px 40px;
-    color: white;
+    color: rgb(11, 10, 37);
 }
 
 .logo {
@@ -17,17 +26,20 @@ body {
     font-weight: 800;
     margin-bottom: 20px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    letter-spacing: -2px;
+    letter-spacing: 10px;
+    transition: opacity 0.3s ease-in-out; 
 }
 
+.top_title:hover .logo {
+    opacity: 0.8; 
+}
 .tagline {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     margin-bottom: 40px;
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
     line-height: 1.6;
-    opacity: 0.9;
 }
 
 .container {
@@ -71,47 +83,40 @@ h1 {
 }
 
 .google-btn {
-    width: 20%;
-    padding: 18px 24px;
-    border: 2px solid #ddd;
-    border-radius: 12px;
-    background: white;
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #3c4043;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .google-btn:hover {
-    border-color: #4285f4;
-    box-shadow: 0 8px 25px rgba(66, 133, 244, 0.3);
-    transform: translateY(-3px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transform: translateY(-5px);
 }
 
-.google-icon {
-    width: 24px;
-    height: 24px;
-}
+
 
 .auth-description {
     text-align: center;
-    color: #666;
+    color: #000000;
     margin-bottom: 30px;
     font-size: 16px;
     line-height: 1.5;
 }
 
+
 .features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    gap: 25px;
     margin: 40px 20px;
     max-width: 1000px;
     margin-left: auto;
@@ -119,13 +124,13 @@ h1 {
 }
 
 .feature-card {
-    background: rgba(255,255,255,0.1);
+    background:  linear-gradient(120deg, #e2e8e8 0%, #ffffff 100%);
     padding: 30px;
     border-radius: 15px;
     text-align: center;
-    color: white;
+    color: rgb(0, 0, 0);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgb(0, 0, 0);
 }
 
 .feature-icon {

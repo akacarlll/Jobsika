@@ -5,11 +5,13 @@
     <link rel="stylesheet" href="{% static 'css/home_page.css' %}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jobsika Votre gestionnaire d'emplois</title>
+    <title>Jobsika Gestionnaire d'Emplois</title>
 </head>
 <body>
-    <div class="hero-section">
+    <div class="top_title">
         <h1 class="logo">Jobsika</h1>
+    </div>
+    <div class="hero-section">
         <p class="tagline">
             Votre plateforme intelligente pour gérer vos candidatures d'emploi. 
             Organisez, suivez et optimisez votre recherche d'emploi en toute simplicité.
@@ -24,7 +26,7 @@
             <div class="feature-card">
                 <span class="feature-icon">📊</span>
                 <div class="feature-title">Suivi Intelligent</div>
-                <div class="feature-description">Suivez l'évolution de chaque candidature automatiquement</div>
+                <div class="feature-description">Suivez l'évolution de chaque candidature </div>
             </div>
             <div class="feature-card">
                 <span class="feature-icon">🎯</span>
@@ -36,9 +38,9 @@
 
             
     <div class="auth-description">
+        <a href="{{ google_auth_url }}" id="googleAuthBtn" class="google-btn">Login with Google</a>
         <p>Connectez-vous avec votre compte Google pour accéder à votre tableau de bord personnel et commencer à organiser vos candidatures.</p>
     </div>
-    <a href="{{ google_auth_url }}" id="googleAuthBtn">Login with Google</a>
     
     <script src="{% static 'js/home_page.js' %}"></script>
 

@@ -1,9 +1,10 @@
 from django.test import TestCase
+
 from jobs_engine.scraper import JobScraper
-from selenium import webdriver
+
 
 class TestJobScraper(TestCase):
     def test_selenium_scraper(self):
         mock_url = "https.fake_site.com"
         scraper = JobScraper(mock_url)
-        assert isinstance(scraper.driver, webdriver.Chrome)
+        assert scraper.driver is None

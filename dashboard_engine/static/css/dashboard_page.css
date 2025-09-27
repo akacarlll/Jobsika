@@ -1,0 +1,277 @@
+/* General Layout */
+.page-body {
+    background: linear-gradient(to bottom right, #eff6ff, #eef2ff, #f5f3ff);
+    min-height: 100vh;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.container-main {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+/* Header */
+.main-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: linear-gradient(to right, #3b82f6, #9333ea);
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.header-subtitle {
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.action-button {
+    background-color: #fff;
+    color: #374151;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    cursor: pointer;
+}
+
+.action-button:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.last-update {
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+/* Stats Cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.stats-card {
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.stats-card-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4b5563;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.stat-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon-blue { background-color: #dbeafe; }
+.stat-icon-green { background-color: #d1fae5; }
+.stat-icon-purple { background-color: #f3e8ff; }
+.stat-icon-orange { background-color: #fff7ed; }
+
+.icon-blue { color: #2563eb; }
+.icon-green { color: #10b981; }
+.icon-purple { color: #9333ea; }
+.icon-orange { color: #ea580c; }
+
+/* Dashboard Charts - FIXED VERSION */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.map-section {
+    grid-column: span 1 / span 1;
+}
+
+@media (min-width: 1024px) {
+    .map-section {
+        grid-column: span 2 / span 2;
+    }
+}
+
+.chart-card {
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+/* FIXED: Direct gradient definitions instead of using undefined variables */
+.chart-header {
+    padding: 1.5rem;
+}
+
+.chart-header-blue {
+    background: linear-gradient(to right, #3b82f6, #9333ea);
+}
+
+.chart-header-green {
+    background: linear-gradient(to right, #22c55e, #0d9488);
+}
+
+.chart-header-indigo {
+    background: linear-gradient(to right, #6366f1, #3b82f6);
+}
+
+.chart-header-pink {
+    background: linear-gradient(to right, #ec4899, #dc2626);
+}
+
+.chart-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+}
+
+.chart-subtitle {
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0 0;
+}
+
+.chart-subtitle-blue { color: #dbeafe; }
+.chart-subtitle-green { color: #d1fae5; }
+.chart-subtitle-indigo { color: #e0e7ff; }
+.chart-subtitle-pink { color: #fce7f3; }
+
+.chart-content {
+    padding: 1.5rem;
+}
+
+/* Footer */
+.footer-info {
+    margin-top: 3rem;
+    text-align: center;
+    color: #4b5563;
+}
+
+.glass-effect {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.fade-in {
+    animation: fadeIn 0.8s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.chart-container {
+    height: 400px;
+    width: 100%;
+    background-color: #f8fafc;
+    border-radius: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Chart content alignment */
+.chart-container > * {
+    width: 100%;
+    height: 100%;
+}
+
+/* For canvas elements (common in chart libraries) */
+.chart-container canvas {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* For SVG elements */
+.chart-container svg {
+    width: 100%;
+    height: 100%;
+}
+
+.map-container {
+    height: 500px;
+    width: 100%;
+}

@@ -1,11 +1,11 @@
 """This module is used to scrape job offers from Welcome to the Jungle"""
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 from ..base_scraper import JobScraper
 
-
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 class WelcomeToTheJungleScraper(JobScraper):
     """Scraper for Welcome to the Jungle job offers"""

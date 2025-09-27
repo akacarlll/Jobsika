@@ -1,18 +1,18 @@
 """This module is used to create a Job offer text parser using LLMs."""
 
-import os
-import requests
-from typing import Optional
 import json
+import os
+from typing import Optional
+
+import requests
+from django.conf import settings
+
 
 class LLMClient:
     """A client to interact with multiple LLM APIs."""
 
     def __init__(
         self,
-        google_api_key: Optional[str] = None,
-        together_api_key: Optional[str] = None,
-        default_google_model: str = "gemini-1.5-flash",
         default_together_model: str = "meta-llama/Llama-3.2-3B-Instruct-Turbo",
         temperature: float = 0.7,
         max_tokens: int = 512,
@@ -21,23 +21,13 @@ class LLMClient:
         Initialize the LLM client with API keys and default parameters.
 
         Args:
-            google_api_key: API key for Google AI
-            together_api_key: API key for Together AI
-            default_google_model: Default Google model to use
             default_together_model: Default Together AI model to use
             temperature: Default temperature for generation
             max_tokens: Default max tokens for generation
         """
-        self.google_api_key = google_api_key
-        self.together_api_key = together_api_key
-        self.default_google_model = default_google_model
         self.default_together_model = default_together_model
         self.temperature = temperature
         self.max_tokens = max_tokens
-
-        # API endpoints
-        self.google_endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-        self.together_endpoint = "https://api.together.xyz/v1/chat/completions"
 
     def get_env_variable(self, key: str) -> str:
         """Return API key from a .env file."""
@@ -52,11 +42,11 @@ class LLMClient:
     ) -> dict:
         """Make API call to Google AI."""
 
-        model = model or self.default_google_model
+
         temp = temperature if temperature is not None else self.temperature
         max_tok = max_tokens or self.max_tokens
 
-        url = self.google_endpoint.format(model=model)
+        url = settings.GOOGLE_ENDPOINT
         headers = {"Content-Type": "application/json"}
 
         payload = {
@@ -66,10 +56,9 @@ class LLMClient:
                 "maxOutputTokens": max_tok
             }
         }
-        self.google_api_key = self.get_env_variable("GOOGLE_API_KEY")
-        params = {"key": self.google_api_key}
+        params = {"key": settings.GOOGLE_API_KEY}
 
-        response = requests.post(url, headers=headers, json=payload, params=params)
+        response = requests.post(url, headers=headers, json=payload, params=params, timeout=15)
         response.raise_for_status()
         data = response.json()
 
@@ -92,7 +81,7 @@ class LLMClient:
         model = model or self.default_together_model
         temp = temperature if temperature is not None else self.temperature
         max_tok = max_tokens or self.max_tokens
-        self.together_api_key = self.get_env_variable("TOGETHER_AI_API_KEY")
+        self.together_api_key = settings.TOGETHER_AI_API_KEY
         headers = {
             "Authorization": f"Bearer {self.together_api_key}",
             "Content-Type": "application/json"
@@ -105,7 +94,7 @@ class LLMClient:
             "max_tokens": max_tok
         }
 
-        response = requests.post(self.together_endpoint, headers=headers, json=payload)
+        response = requests.post(settings.TOGETHER_AI_ENDPOINT, headers=headers, json=payload, timeout=15)
         response.raise_for_status()
 
         data = response.json()
