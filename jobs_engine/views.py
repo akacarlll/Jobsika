@@ -29,25 +29,38 @@ class JobPostingView(View):
         Returns:
             HttpResponseRedirect: Redirects to the add job form page with a success or error message.
         """
-        job_url_description = ""
         job_url = request.POST.get("job_url", "")
-        if not job_url:
-            job_url_description = request.POST.get("job_url_for_description", "")
-
+        job_url_description = request.POST.get("job_url_for_description", "")
         job_description = request.POST.get("job_description")
         notes = request.POST.get("notes", "")
+
+        if not job_url and not job_description:
+            messages.error(
+                request,
+                "❌ Please provide either a job URL or job description."
+            )
+            return redirect("jobs_engine:add_job")
         application_processor = JobApplicationProcessor(notes=notes)
 
         # TODO: Verify thats it's a requetable URL
 
-        if job_url:
-            application_processor.url = job_url
-            self.data = application_processor.process_job_offer()
-        if job_description:
-            application_processor.url = job_url_description
-            self.data = application_processor.process_job_offer(
-                job_description=job_description
+        self.data = {}
+        try : 
+            if job_url:
+                application_processor.url = job_url
+                self.data = application_processor.process_job_offer()
+            else:
+                application_processor.url = job_url_description
+                self.data = application_processor.process_job_offer(
+                    job_description=job_description
+                )
+        except Exception as e:
+            logger.error(f"Error processing the job offer: {e}")
+            messages.error(
+                request,
+                "❌ An error occurred while processing the job offer. Please try again."
             )
+            return redirect("jobs_engine:add_job")
 
         logger.info("Successfully processed the URL.")
 

@@ -80,12 +80,11 @@ class LLMClient:
     ) -> dict:
         """Make API call to Together AI."""
 
-        model = model or self.default_together_model
-        temp = temperature if temperature is not None else self.temperature
-        max_tok = max_tokens or self.max_tokens
-        self.together_api_key = settings.TOGETHER_AI_API_KEY
+        model = self.default_together_model
+        temp = self.temperature
+        max_tok =self.max_tokens
         headers = {
-            "Authorization": f"Bearer {self.together_api_key}",
+            "Authorization": f"Bearer {settings.TOGETHER_AI_API_KEY}",
             "Content-Type": "application/json"
         }
 
