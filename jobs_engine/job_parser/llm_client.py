@@ -58,7 +58,7 @@ class LLMClient:
         }
         params = {"key": settings.GOOGLE_API_KEY}
 
-        response = requests.post(url, headers=headers, json=payload, params=params)
+        response = requests.post(url, headers=headers, json=payload, params=params, timeout=15)
         response.raise_for_status()
         data = response.json()
 
@@ -94,7 +94,7 @@ class LLMClient:
             "max_tokens": max_tok
         }
 
-        response = requests.post(settings.TOGETHER_AI_ENDPOINT, headers=headers, json=payload)
+        response = requests.post(settings.TOGETHER_AI_ENDPOINT, headers=headers, json=payload, timeout=15)
         response.raise_for_status()
 
         data = response.json()
