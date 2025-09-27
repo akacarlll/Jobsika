@@ -78,7 +78,7 @@ class DashboardCreator:
             mapbox_style="open-street-map",
             mapbox={
                 "center": {"lat": 48.8566, "lon": 2.3522},
-                "zoom": 6
+                "zoom": 4
             },
             margin={"r": 0, "t": 30, "l": 0, "b": 0},
             showlegend=False

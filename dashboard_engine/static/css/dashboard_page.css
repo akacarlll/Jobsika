@@ -1,20 +1,14 @@
 /* General Layout */
 .page-body {
-    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
-    --tw-gradient-from: #eff6ff; /* blue-50 */
-    --tw-gradient-via: #eef2ff; /* indigo-50 */
-    --tw-gradient-to: #f5f3ff; /* purple-50 */
+    background: linear-gradient(to bottom right, #eff6ff, #eef2ff, #f5f3ff);
     min-height: 100vh;
+    font-family: system-ui, -apple-system, sans-serif;
 }
 
 .container-main {
     max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
 }
 
 /* Header */
@@ -39,7 +33,7 @@
 .logo-icon {
     width: 2.5rem;
     height: 2.5rem;
-    background-image: linear-gradient(to right, #3b82f6, #9333ea); /* from-blue-500 to-purple-600 */
+    background: linear-gradient(to right, #3b82f6, #9333ea);
     border-radius: 0.5rem;
     display: flex;
     align-items: center;
@@ -47,14 +41,14 @@
 }
 
 .header-title {
-    font-size: 1.5rem; /* text-2xl */
-    font-weight: 700; /* font-bold */
-    color: #1f2937; /* text-gray-800 */
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
 }
 
 .header-subtitle {
-    font-size: 0.875rem; /* text-sm */
-    color: #4b5563; /* text-gray-600 */
+    font-size: 0.875rem;
+    color: #4b5563;
 }
 
 .header-actions {
@@ -65,20 +59,20 @@
 
 .action-button {
     background-color: #fff;
-    color: #374151; /* text-gray-700 */
+    color: #374151;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* shadow */
-    transition-property: all;
-    transition-duration: 300ms;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    border: none;
+    cursor: pointer;
 }
 
 .action-button:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* hover:shadow-md */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .last-update {
@@ -141,17 +135,17 @@
     justify-content: center;
 }
 
-.stat-icon-blue { background-color: #dbeafe; } /* bg-blue-100 */
-.stat-icon-green { background-color: #d1fae5; } /* bg-green-100 */
-.stat-icon-purple { background-color: #f3e8ff; } /* bg-purple-100 */
-.stat-icon-orange { background-color: #fff7ed; } /* bg-orange-100 */
+.stat-icon-blue { background-color: #dbeafe; }
+.stat-icon-green { background-color: #d1fae5; }
+.stat-icon-purple { background-color: #f3e8ff; }
+.stat-icon-orange { background-color: #fff7ed; }
 
-.icon-blue { color: #2563eb; } /* text-blue-600 */
-.icon-green { color: #10b981; } /* text-green-600 */
-.icon-purple { color: #9333ea; } /* text-purple-600 */
-.icon-orange { color: #ea580c; } /* text-orange-600 */
+.icon-blue { color: #2563eb; }
+.icon-green { color: #10b981; }
+.icon-purple { color: #9333ea; }
+.icon-orange { color: #ea580c; }
 
-/* Dashboard Charts */
+/* Dashboard Charts - FIXED VERSION */
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -181,29 +175,25 @@
     overflow: hidden;
 }
 
+/* FIXED: Direct gradient definitions instead of using undefined variables */
 .chart-header {
     padding: 1.5rem;
-    background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
 
 .chart-header-blue {
-    --tw-gradient-from: #3b82f6;
-    --tw-gradient-to: #9333ea;
+    background: linear-gradient(to right, #3b82f6, #9333ea);
 }
 
 .chart-header-green {
-    --tw-gradient-from: #22c55e;
-    --tw-gradient-to: #0d9488;
+    background: linear-gradient(to right, #22c55e, #0d9488);
 }
 
 .chart-header-indigo {
-    --tw-gradient-from: #6366f1;
-    --tw-gradient-to: #3b82f6;
+    background: linear-gradient(to right, #6366f1, #3b82f6);
 }
 
 .chart-header-pink {
-    --tw-gradient-from: #ec4899;
-    --tw-gradient-to: #dc2626;
+    background: linear-gradient(to right, #ec4899, #dc2626);
 }
 
 .chart-title {
@@ -213,17 +203,18 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    margin: 0;
 }
 
 .chart-subtitle {
     font-size: 0.875rem;
-    margin-top: 0.25rem;
+    margin: 0.25rem 0 0 0;
 }
 
-.chart-subtitle-blue { color: #dbeafe; } /* text-blue-100 */
-.chart-subtitle-green { color: #d1fae5; } /* text-green-100 */
-.chart-subtitle-indigo { color: #e0e7ff; } /* text-indigo-100 */
-.chart-subtitle-pink { color: #fce7f3; } /* text-pink-100 */
+.chart-subtitle-blue { color: #dbeafe; }
+.chart-subtitle-green { color: #d1fae5; }
+.chart-subtitle-indigo { color: #e0e7ff; }
+.chart-subtitle-pink { color: #fce7f3; }
 
 .chart-content {
     padding: 1.5rem;
@@ -236,12 +227,11 @@
     color: #4b5563;
 }
 
-/* Re-using some of the existing classes that are now defined here */
 .glass-effect {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .fade-in {
@@ -256,6 +246,29 @@
 .chart-container {
     height: 400px;
     width: 100%;
+    background-color: #f8fafc;
+    border-radius: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Chart content alignment */
+.chart-container > * {
+    width: 100%;
+    height: 100%;
+}
+
+/* For canvas elements (common in chart libraries) */
+.chart-container canvas {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* For SVG elements */
+.chart-container svg {
+    width: 100%;
+    height: 100%;
 }
 
 .map-container {
