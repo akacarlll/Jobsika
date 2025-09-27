@@ -23,7 +23,7 @@
             <form method="post" action="{% url 'jobs_engine:process_job' %}">
                 {% csrf_token %}
                 
-                <div id="urlSection">
+                <div id="urlSection" class="hidden">
                     <div class="form-group">
                         <label for="job_url">🔗 URL de l'offre d'emploi :</label>
                         <input type="url" 
@@ -35,7 +35,7 @@
                     </div>
                 </div>
                 
-                <div id="descriptionSection" class="hidden">
+                <div id="descriptionSection">
                     <div class="form-group">
                         <label for="job_description">📄 Description de l'offre d'emploi :</label>
                         <textarea id="job_description" 
@@ -46,15 +46,16 @@
                         <small>Copiez-collez la description complète de l'offre d'emploi</small>
                     </div>
                 </div>
-                
-                <div class="form-group" id="job_url_for_description_form">
-                    <label for="job_url">🔗 URL de l'offre d'emploi :</label>
-                    <input type="url"
-                        id="job_url_for_description" 
-                        name="job_url" 
-                        placeholder="https://example.com/job-posting" 
-                        class="form-input">
-                    <small>Collez l'URL de l'offre d'emploi que vous souhaitez analyser</small>
+                <div id="job_url_for_description_form">
+                    <div class="form-group">
+                        <label for="job_url_description">🔗 URL de l'offre d'emploi :</label>
+                        <input type="url"
+                            id="job_url_for_description" 
+                            name="job_url_description" 
+                            placeholder="https://example.com/job-posting" 
+                            class="form-input">
+                        <small>Collez l'URL de l'offre d'emploi que vous souhaitez analyser</small>
+                    </div>
                 </div>
 
                 

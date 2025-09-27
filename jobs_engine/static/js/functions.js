@@ -1,4 +1,4 @@
-let isUrlMode = true; // Track current mode (true = URL mode, false = description mode)
+let isUrlMode = false; // Track current mode (true = URL mode, false = description mode)
 
 function toggleSubmitType() {
     const urlSection = document.getElementById('urlSection');

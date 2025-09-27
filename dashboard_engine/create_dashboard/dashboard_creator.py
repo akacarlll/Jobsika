@@ -68,7 +68,7 @@ class DashboardCreator:
             zoom=6,
             height=500,
             color_continuous_scale="Viridis",
-            size_max=30,
+            size_max=15,
             title="Répartition géographique des candidatures"
         )
 
@@ -76,7 +76,7 @@ class DashboardCreator:
             mapbox_style="open-street-map",
             mapbox={
                 "center": {"lat": 48.8566, "lon": 2.3522},
-                "zoom": 4
+                "zoom": 6
             },
             margin={"r": 0, "t": 30, "l": 0, "b": 0},
             showlegend=False

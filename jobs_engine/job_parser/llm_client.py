@@ -1,12 +1,14 @@
 """This module is used to create a Job offer text parser using LLMs."""
 
 import json
+import logging
 import os
 from typing import Optional
 
 import requests
 from django.conf import settings
 
+logger = logging.getLogger(__name__)
 
 class LLMClient:
     """A client to interact with multiple LLM APIs."""
@@ -78,12 +80,11 @@ class LLMClient:
     ) -> dict:
         """Make API call to Together AI."""
 
-        model = model or self.default_together_model
-        temp = temperature if temperature is not None else self.temperature
-        max_tok = max_tokens or self.max_tokens
-        self.together_api_key = settings.TOGETHER_AI_API_KEY
+        model = self.default_together_model
+        temp = self.temperature
+        max_tok =self.max_tokens
         headers = {
-            "Authorization": f"Bearer {self.together_api_key}",
+            "Authorization": f"Bearer {settings.TOGETHER_AI_API_KEY}",
             "Content-Type": "application/json"
         }
 
@@ -108,7 +109,6 @@ class LLMClient:
     def generate(
         self,
         prompt: str,
-        provider: str = "google",
         model: Optional[str] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None
@@ -120,7 +120,6 @@ class LLMClient:
             prompt_template: Either a template string with {variable} placeholders
                            or a PromptTemplate object with template and partial_variables
             variables: Dictionary of variables to substitute (if prompt_template is string)
-            provider: LLM provider to use ("google" or "together_ai")
             model: Specific model to use (overrides default)
             temperature: Temperature for generation (overrides default)
             max_tokens: Max tokens for generation (overrides default)
@@ -128,9 +127,8 @@ class LLMClient:
         Returns:
             Generated text response
         """
-        if provider.lower() == "google":
+        try:
             return self._call_google_ai(prompt, model, temperature, max_tokens)
-        elif provider.lower() == "together_ai":
+        except Exception as e:
+            logger.error(f"Error calling Google AI: {e}")
             return self._call_together_ai(prompt, model, temperature, max_tokens)
-        else:
-            raise ValueError(f"Unsupported provider: {provider}. Use 'google' or 'together_ai'")
