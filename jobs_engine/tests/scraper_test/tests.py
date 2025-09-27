@@ -1,5 +1,4 @@
 from django.test import TestCase
-from selenium import webdriver
 
 from jobs_engine.scraper import JobScraper
 
