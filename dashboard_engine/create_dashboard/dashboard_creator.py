@@ -106,8 +106,8 @@ class DashboardCreator:
         Returns:
             str: JSON-encoded Plotly figure.
         """
-        skills_series = self.job_application_df[col].dropna().apply(lambda x: [s.strip().lower() for s in x.split(",") if s.strip()])
-        
+        skills_series = self.job_application_df[col].dropna().apply(lambda x:
+            [s.strip().lower() for s in x.split(",") if s.strip()])
         all_skills = [skill for sublist in skills_series for skill in sublist if skill]
 
         skill_counts = pd.Series(all_skills).value_counts().reset_index()

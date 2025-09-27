@@ -11,7 +11,7 @@ target-version = "py313"
 
 # Select all linting rules
 [tool.ruff.lint]
-select = ["E", "F", "W", "C", "B", "RUF"]
+select = ["E", "F", "W", "C", "B", "RUF", "I", "SIM"]
 
 # Optional: show verbose output
 # verbose = true
