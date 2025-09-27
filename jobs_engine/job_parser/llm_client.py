@@ -6,7 +6,9 @@ from typing import Optional
 
 import requests
 from django.conf import settings
+import logging
 
+logger = logging.getLogger(__name__)
 
 class LLMClient:
     """A client to interact with multiple LLM APIs."""
@@ -108,7 +110,6 @@ class LLMClient:
     def generate(
         self,
         prompt: str,
-        provider: str = "google",
         model: Optional[str] = None,
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None
@@ -120,7 +121,6 @@ class LLMClient:
             prompt_template: Either a template string with {variable} placeholders
                            or a PromptTemplate object with template and partial_variables
             variables: Dictionary of variables to substitute (if prompt_template is string)
-            provider: LLM provider to use ("google" or "together_ai")
             model: Specific model to use (overrides default)
             temperature: Temperature for generation (overrides default)
             max_tokens: Max tokens for generation (overrides default)
@@ -128,9 +128,8 @@ class LLMClient:
         Returns:
             Generated text response
         """
-        if provider.lower() == "google":
+        try:
             return self._call_google_ai(prompt, model, temperature, max_tokens)
-        elif provider.lower() == "together_ai":
+        except Exception as e:
+            logger.error(f"Error calling Google AI: {e}")
             return self._call_together_ai(prompt, model, temperature, max_tokens)
-        else:
-            raise ValueError(f"Unsupported provider: {provider}. Use 'google' or 'together_ai'")
