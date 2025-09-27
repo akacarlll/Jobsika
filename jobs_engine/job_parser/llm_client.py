@@ -1,12 +1,12 @@
 """This module is used to create a Job offer text parser using LLMs."""
 
 import json
+import logging
 import os
 from typing import Optional
 
 import requests
 from django.conf import settings
-import logging
 
 logger = logging.getLogger(__name__)
 

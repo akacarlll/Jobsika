@@ -45,7 +45,7 @@ class JobPostingView(View):
         # TODO: Verify thats it's a requetable URL
 
         self.data = {}
-        try : 
+        try :
             if job_url:
                 application_processor.url = job_url
                 self.data = application_processor.process_job_offer()
