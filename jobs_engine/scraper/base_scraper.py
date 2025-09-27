@@ -19,7 +19,7 @@ class JobScraper:
             url (str): The URL of the job posting to scrape.
         """
         self.url = url
-        self.driver = self.setup_webdriver()
+        self.driver = None
 
     def setup_webdriver(self) -> webdriver.Chrome:
         """Sets up the Selenium WebDriver with download preferences.
@@ -42,6 +42,7 @@ class JobScraper:
         Returns:
             str: The text content of the job offer.
         """
+        self.driver = self.setup_webdriver()
         self.driver.get(self.url)
 
         WebDriverWait(self.driver, 10).until(

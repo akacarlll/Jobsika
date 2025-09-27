@@ -5,7 +5,6 @@ document.getElementById("gotoJobEngine").addEventListener("click", function() {
 
 // Function to render Plotly dashboards
 function renderPlotlyDashboard(containerId, figure, height = 400) {
-    console.log(`Rendering ${containerId}:`, figure);
     const container = document.getElementById(containerId);
 
     if (container && figure) {
@@ -93,7 +92,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     try {
         const dashboardsData = JSON.parse(dataElement.textContent);
-        console.log("Parsed Dashboards Data:", dashboardsData);
         
         // This is the correct data access based on your provided log
         if (dashboardsData) {
@@ -107,10 +105,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // The timeline_dashboards are a nested object, access its properties directly
             if (dashboardsData.timeline_dashboards) {
                 if (dashboardsData.timeline_dashboards.hourly) {
-                    renderPlotlyDashboard('hourlyDashboard', dashboardsData.timeline_dashboards.hourly);
+                    renderPlotlyDashboard('hourlyDashboard', JSON.parse(dashboardsData.timeline_dashboards.hourly));
                 }
                 if (dashboardsData.timeline_dashboards.daily) {
-                    renderPlotlyDashboard('dailyDashboard', dashboardsData.timeline_dashboards.daily);
+                    renderPlotlyDashboard('dailyDashboard', JSON.parse(dashboardsData.timeline_dashboards.daily));
                 }
             }
         } else {

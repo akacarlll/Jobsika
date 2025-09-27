@@ -14,7 +14,7 @@ class LLMClient:
         self,
         google_api_key: Optional[str] = None,
         together_api_key: Optional[str] = None,
-        default_google_model: str = "gemini-1.5-flash",
+        default_google_model: str = "gemini-2.0-flash",
         default_together_model: str = "meta-llama/Llama-3.2-3B-Instruct-Turbo",
         temperature: float = 0.7,
         max_tokens: int = 512,
