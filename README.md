@@ -1,9 +1,13 @@
 # 🚀 Jobsika  
 
-Jobsika is a lightweight tool that helps you track your job applications effortlessly.  
-It extracts job details from multiple websites (LinkedIn, Welcome to the Jungle, HelloWork, etc.) and organizes them into Google Sheets.  
+Jobsika is a tool that helps you track your job applications effortlessly.     
+It organizes the data from job descriptions you applied to into Google Sheets. 
+
+You can paste a job description or an url from multiple websites (LinkedIn, Welcome to the Jungle, HelloWork, etc.) and the information will be stored in a Google Sheet.
 
 Jobsika also generates insightful dashboards so you can analyze your job hunt progress, all in one place.  
+
+You can already test the app on [Jobsika](https://jobsika.onrender.com).
 
 ## ✨ Features:  
 
@@ -29,17 +33,17 @@ Jobsika gives you a clear view of your job search with an interactive dashboard:
 
 #### 🖼️ Demo & Screenshots
 
-**Example of the JobsikaTracker Google Sheet**
+**Example of a JobsikaTracker Google Sheet**
 
 ![alt text](data/readme_images/image-1.png)
 
 **Map and General Statistics:**  
 
-![data/readme_images/image-2.png](data/readme_images/image-2.png)
+![alt text](data/readme_images/map_gen_stats.png)
 
 **Skills asked by the companies in the Job Sheet:**  
 
-![alt text](data/readme_images/image-3.png)
+![alt text](data/readme_images/skills.png)
 
 
 #### What Am I working on next :  

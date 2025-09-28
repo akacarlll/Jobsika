@@ -69,7 +69,6 @@ class DashboardCreator:
             height=500,
             color_continuous_scale="Viridis",
             size_max=15,
-            title="Répartition géographique des candidatures"
         )
 
         fig.update_layout(
@@ -119,7 +118,6 @@ class DashboardCreator:
             skill_counts,
             names="Skill",
             values="Count",
-            title="Compétences les plus demandées",
             hole=0.2
         )
 
@@ -155,7 +153,6 @@ class DashboardCreator:
             hourly_dist,
             x='Heure',
             y='Candidatures',
-            title='Distribution par heure de la journée'
         )
         hourly_fig.update_layout(
             xaxis_title="Heure",
@@ -175,7 +172,6 @@ class DashboardCreator:
             daily_dist,
             x='Jour',
             y='Candidatures',
-            title='Distribution par jour de la semaine'
         )
 
         df['Month'] = df[date_applied_col].dt.to_period('M').dt.to_timestamp()
