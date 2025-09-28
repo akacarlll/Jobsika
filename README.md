@@ -19,7 +19,7 @@ Paste the URL or description of any job posting. Jobsika will extract details li
 
 All results are saved into your Google Sheets account under a sheet named JobsikaTracker.  
 
-#### 📊 Automatic Report & Dashboard Creation  
+#### 📊 Report & Dashboard Creation  
 
 Jobsika gives you a clear view of your job search with an interactive dashboard:  
 
@@ -29,8 +29,24 @@ Jobsika gives you a clear view of your job search with an interactive dashboard:
 
 #### 🖼️ Demo & Screenshots
 
-Example of the JobsikaTracker Google Sheet:  
-(Soon)
+**Example of the JobsikaTracker Google Sheet**
 
-Example of the Dashboard page:  
-(Soon)
+![alt text](data/readme_images/image-1.png)
+
+**Map and General Statistics:**  
+
+![data/readme_images/image-2.png](data/readme_images/image-2.png)
+
+**Skills asked by the companies in the Job Sheet:**  
+
+![alt text](data/readme_images/image-3.png)
+
+
+#### What Am I working on next :  
+
+🔄 Smart Queue System & Multi-threading
+Currently building a robust background processing system that handles multiple job applications simultaneously:
+
+📧 Automated Follow-up System
+
+⏰ 5-7 Day Auto-Follow: Automatically sends polite follow-up messages to hiring managers x days after you apply
