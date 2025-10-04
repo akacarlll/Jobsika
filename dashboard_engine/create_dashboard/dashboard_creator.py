@@ -18,6 +18,22 @@ class DashboardCreator:
         """
         self.job_application_df = pd.DataFrame(job_application_data)
 
+    def clean_location(self, df, column='Location'):
+        """Remove unwanted text patterns from location column."""
+        patterns = [
+            r'\s*-\s*\d+',  # Postal codes
+            r'\(67\)',
+            r'et périphérie',
+            r'\(hybride\)',
+            r'\(relocation from levallois-perret planned from april 2025\)',
+            r' \(occasional remote work\)',
+            r"ville de"
+        ]
+
+        result = df[column].copy()
+        for pattern in patterns:
+            result = result.str.lower().replace(pattern, '', regex=True)
+        return result.str.strip()
 
     def read_city_location_csv(self, country_code: str) -> pd.DataFrame:
         """Read city location data from a CSV file.
@@ -49,6 +65,8 @@ class DashboardCreator:
         """
         city_locations = self.load_and_merge_city_data()
 
+        self.job_application_df["Location"] = self.clean_location(self.job_application_df)
+
         locations_data = []
 
         for city in self.job_application_df["Location"].values:
@@ -56,7 +74,7 @@ class DashboardCreator:
                 continue
 
             city_stripped = str(city).strip().lower()
-            city_clean = city_stripped.replace("ville de paris", "paris").split(" ")[0].split(",")[0].strip()
+            city_clean = city_stripped.split(",")[0].strip()
             city_match = city_locations[city_locations["city"] == city_clean]
 
 
