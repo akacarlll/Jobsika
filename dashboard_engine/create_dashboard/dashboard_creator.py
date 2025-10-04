@@ -18,6 +18,28 @@ class DashboardCreator:
         """
         self.job_application_df = pd.DataFrame(job_application_data)
 
+
+    def read_city_location_csv(self, country_code: str) -> pd.DataFrame:
+        """Read city location data from a CSV file.
+
+        Args:
+            country_code (str): The country code (e.g., "fr", "us"...).
+
+        Returns:
+            pd.DataFrame: City location data.
+        """
+        return pd.read_csv(f"data/{country_code.lower()}_city_location.csv")
+
+    def load_and_merge_city_data(self) -> pd.DataFrame:
+        """
+        Load and merge city location data from CSV files.
+
+        Returns:
+            pd.DataFrame: Merged city location data.
+        """
+        city_location_dfs = list(map(self.read_city_location_csv, settings.COUNTRY_APPLIED))
+        return pd.concat(city_location_dfs, ignore_index=True)
+
     def create_map_dashboard(self) -> str:
         """
         Create a map dashboard visualizing job applications by city location.
@@ -25,7 +47,7 @@ class DashboardCreator:
         Returns:
             str: JSON-encoded Plotly figure.
         """
-        french_city_location = pd.read_csv("data/french_city_location.csv")
+        city_locations = self.load_and_merge_city_data()
 
         locations_data = []
 
@@ -35,7 +57,7 @@ class DashboardCreator:
 
             city_stripped = str(city).strip().lower()
             city_clean = city_stripped.replace("ville de paris", "paris").split(" ")[0].split(",")[0].strip()
-            city_match = french_city_location[french_city_location["city"] == city_clean]
+            city_match = city_locations[city_locations["city"] == city_clean]
 
 
             if not city_match.empty:

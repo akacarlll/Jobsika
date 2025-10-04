@@ -26,6 +26,9 @@ GOOGLE_ENDPOINT = os.getenv("GOOGLE_ENDPOINT", "")
 TOGETHER_AI_ENDPOINT = os.getenv("TOGETHER_ENDPOINT", "")
 TOGETHER_AI_API_KEY = os.getenv("TOGETHER_AI_API_KEY", "")
 
+# Countries where the user has applied to jobs (used for city location data)
+COUNTRY_APPLIED = ["fr", "us"]
+
 # Build paths inside the project like this: BASE_DIR / "subdir".
 BASE_DIR = Path(__file__).resolve().parent.parent
 
