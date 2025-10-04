@@ -60,8 +60,6 @@ class JobPostingView(View):
                 "❌ An error occurred while processing the job offer. Please try again."
             )
             return redirect("jobs_engine:add_job")
-        
-        print("DEBUG: ", self.data)
 
         logger.info("Successfully processed the URL.")
 

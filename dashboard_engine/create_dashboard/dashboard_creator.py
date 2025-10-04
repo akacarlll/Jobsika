@@ -133,7 +133,7 @@ class DashboardCreator:
 
         timeline_fig = px.line(
             daily_apps,
-            x='Date',    
+            x='Date',
             y='Applications',
             markers=True
         )
