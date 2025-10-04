@@ -1,4 +1,4 @@
-let isUrlMode = false; // Track current mode (true = URL mode, false = description mode)
+let isUrlMode = false; // Track current mode (false = description mode by default)
 
 function toggleSubmitType() {
     const urlSection = document.getElementById('urlSection');
@@ -7,8 +7,7 @@ function toggleSubmitType() {
     const formTitle = document.getElementById('formTitle');
     const jobUrlInput = document.getElementById('job_url');
     const jobUrlInputForDescription = document.getElementById('job_url_for_description_form');
-    const jobDescriptionInput = document.getElementById('job_description');
-    
+    const jobDescriptionInput = document.getElementById('job_description');   
     if (isUrlMode) {
         // Switch to description mode
         urlSection.classList.add('hidden');
@@ -17,12 +16,12 @@ function toggleSubmitType() {
         formTitle.textContent = '📝 Ajouter une description d\'emploi';
 
         jobUrlInputForDescription.classList.remove('hidden');
-        
+       
         // Remove required attribute from URL input and add to description
         jobUrlInput.removeAttribute('required');
         jobDescriptionInput.setAttribute('required', 'required');
         jobUrlInputForDescription.setAttribute('required', 'required');
-        
+       
         isUrlMode = false;
     } else {
         // Switch to URL mode
@@ -32,12 +31,12 @@ function toggleSubmitType() {
         urlSection.classList.remove('hidden');
         toggleButton.textContent = '📝 Saisie manuelle';
         formTitle.textContent = '📝 Ajouter une offre d\'emploi';
-        
+       
         // Remove required attribute from description input and add to URL
         jobDescriptionInput.removeAttribute('required');
         jobUrlInputForDescription.removeAttribute('required');
         jobUrlInput.setAttribute('required', 'required');
-        
+
         isUrlMode = true;
     }
 }
@@ -49,9 +48,10 @@ function clearForm() {
     document.getElementById('notes').value = '';
 }
 
-// Initialize the form with URL mode and required attribute
+// Initialize the form with Description mode and required attribute
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('job_url').setAttribute('required', 'required');
+    document.getElementById('descriptionSection').setAttribute('required', 'required');
+    jobUrlInputForDescription.setAttribute('required', 'required');
 });
 
 function gotoDashboardPage() {

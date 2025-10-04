@@ -57,7 +57,7 @@
                 <div class="stats-card-content">
                     <div>
                         <p class="stat-label">Total Candidatures</p>
-                        <p class="stat-value" id="totalApplications">{{ dashboards.stats.total|default:"0" }}</p>
+                        <p class="stat-value" id="totalApplications">{{ dashboards.date_stats.total|default:"0" }}</p>
                     </div>
                     <div class="stat-icon stat-icon-blue">
                         <i class="fas fa-paper-plane text-xl icon-blue"></i>
@@ -69,31 +69,51 @@
                 <div class="stats-card-content">
                     <div>
                         <p class="stat-label">Villes Uniques</p>
-                        <p class="stat-value" id="uniqueCities">{{ dashboards.stats.cities|default:"0" }}</p>
+                        <p class="stat-value" id="uniqueCities">{{ dashboards.date_stats.cities|default:"0" }}</p>
                     </div>
                     <div class="stat-icon stat-icon-green">
                         <i class="fas fa-map-marker-alt text-xl icon-green"></i>
                     </div>
                 </div>
             </div>
-            
             <div class="stats-card">
                 <div class="stats-card-content">
                     <div>
                         <p class="stat-label">Cette Semaine</p>
-                        <p class="stat-value" id="thisWeek">{{ dashboards.stats.week|default:"0" }}</p>
+                        <p class="stat-value" id="thisWeek">{{ dashboards.date_stats.current_week|default:"0" }}</p>
                     </div>
                     <div class="stat-icon stat-icon-purple">
                         <i class="fas fa-calendar-week text-xl icon-purple"></i>
                     </div>
                 </div>
             </div>
-            
+            <div class="stats-card">
+                <div class="stats-card-content">
+                    <div>
+                        <p class="stat-label">Aujourd'hui</p>
+                        <p class="stat-value" id="responseRate">{{ dashboards.date_stats.current_day|default:"0" }}</p>
+                    </div>
+                    <div class="stat-icon stat-icon-orange">
+                        <i class="fas fa-chart-pie text-xl icon-orange"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-card-content">
+                    <div>
+                        <p class="stat-label">Nombre de Candidature moyenne par Jour</p>
+                        <p class="stat-value" id="responseRate">{{ dashboards.date_stats.avg_per_day|default:"0" }}</p>
+                    </div>
+                    <div class="stat-icon stat-icon-orange">
+                        <i class="fas fa-chart-pie text-xl icon-orange"></i>
+                    </div>
+                </div>
+            </div>
             <div class="stats-card">
                 <div class="stats-card-content">
                     <div>
                         <p class="stat-label">Taux de Réponse</p>
-                        <p class="stat-value" id="responseRate">{{ dashboards.stats.response_rate|default:"0" }}%</p>
+                        <p class="stat-value" id="responseRate">{{ dashboards.date_stats.response_rate|default:"0" }}%</p>
                     </div>
                     <div class="stat-icon stat-icon-orange">
                         <i class="fas fa-chart-pie text-xl icon-orange"></i>
@@ -146,6 +166,36 @@
                     </div>
                     <div class="chart-content">
                         <div class="chart-container" id="dailyDashboard">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fade-in">
+                <div class="chart-card">
+                    <div class="chart-header chart-header-indigo">
+                        <h2 class="chart-title">
+                            <i class="fas fa-calendar-day"></i>
+                            Evolution quotidienne des candidatures
+                        </h2>
+                        <p class="chart-subtitle chart-subtitle-indigo">Candidature par Jour</p>
+                    </div>
+                    <div class="chart-content">
+                        <div class="chart-container" id="timelineDashboard">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fade-in">
+                <div class="chart-card">
+                    <div class="chart-header chart-header-indigo">
+                        <h2 class="chart-title">
+                            <i class="fas fa-calendar-day"></i>
+                            Candidature Cumulée
+                        </h2>
+                        <p class="chart-subtitle chart-subtitle-indigo">Candidature cumulée depuis le début</p>
+                    </div>
+                    <div class="chart-content">
+                        <div class="chart-container" id="cumulativeDashboard">
                         </div>
                     </div>
                 </div>

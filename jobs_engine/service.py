@@ -37,20 +37,21 @@ class JobApplicationProcessor:
             Extract the following information from the job offer:
             1. Job Title: The title of the job position.
             2. Company Name: The name of the company offering the job.
-            3. Location: The job's location (city, state, country, or remote).
+            3. Location: The job's location, extracted in this order city, state, country.
             4. Required Skills: A list of specific skills or qualifications required
                 (e.g., ["Python", "SQL", "Docker"]).
             5. Job Description Summary: A concise summary of the job responsibilities and role (2-3 sentences).
             6. Salary: The salary or compensation range, if explicitly stated.
             7. Contact Information: Any contact details provided for application or inquiries.
             8. Contract Type: The type of contract (e.g., CDI, CDD, freelance).
+            9. Experience Level: The required experience in years (e.g., 1-3 years, 2 years, Junior, Senior,...).
 
             Job Offer Text:
             {job_description}
 
             Please format the output as a JSON object with keys:
             'job_title', 'company_name', 'location', 'required_skills', 'job_description_summary',
-            'salary', 'contact_information'.
+            'salary', 'contact_information', 'experience_level', 'contract_type'.
 
             If any information is missing or unclear, use the following rules:
             - Provide and empty string ("") if not found for every values.

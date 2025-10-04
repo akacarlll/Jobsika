@@ -145,7 +145,7 @@
 .icon-purple { color: #9333ea; }
 .icon-orange { color: #ea580c; }
 
-/* Dashboard Charts - FIXED VERSION */
+/* Dashboard Charts */
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -175,7 +175,7 @@
     overflow: hidden;
 }
 
-/* FIXED: Direct gradient definitions instead of using undefined variables */
+/* Direct gradient definitions*/
 .chart-header {
     padding: 1.5rem;
 }
@@ -272,6 +272,13 @@
 }
 
 .map-container {
-    height: 500px;
+    height: 85vh; /* 85% of viewport height */
+    max-height: 1200px; /* Cap maximum height */
+    min-height: 600px; /* Minimum readable size */
+    width: 100%;
+}
+
+#mapDashboard {
+    height: 800px;
     width: 100%;
 }

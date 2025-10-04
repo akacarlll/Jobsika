@@ -33,11 +33,8 @@ class DashboardCreator:
             if pd.isna(city):
                 continue
 
-            city_stripped = str(city).strip()
-
-            city_clean = city_stripped.split(',')[0].strip()
-            city_clean = city_clean.replace(' (occasional remote work)', '').strip()
-
+            city_stripped = str(city).strip().lower()
+            city_clean = city_stripped.replace("ville de paris", "paris").split(" ")[0].split(",")[0].strip()
             city_match = french_city_location[french_city_location["city"] == city_clean]
 
 
@@ -58,7 +55,7 @@ class DashboardCreator:
 
         px.set_mapbox_access_token(settings.MAPBOX_TOKEN)
 
-        fig = px.scatter_mapbox(
+        fig = px.scatter_map(
             df_grouped,
             lat="lat",
             lon="lng",
@@ -129,14 +126,15 @@ class DashboardCreator:
         df = self.job_application_df.copy()
         df[date_applied_col] = pd.to_datetime(df[date_applied_col])
 
+        current_week = df[df[date_applied_col] >= df[date_applied_col].max() - pd.Timedelta(days=7)]
+
         daily_apps = df.groupby(df[date_applied_col].dt.date).size().reset_index()
         daily_apps.columns = ['Date', 'Applications']
 
         timeline_fig = px.line(
             daily_apps,
-            x='Date',
+            x='Date',    
             y='Applications',
-            title='Évolution quotidienne des candidatures',
             markers=True
         )
         timeline_fig.update_layout(
@@ -145,8 +143,8 @@ class DashboardCreator:
             showlegend=False
         )
 
-        df['Hour'] = df[date_applied_col].dt.hour
-        hourly_dist = df['Hour'].value_counts().sort_index().reset_index()
+        current_week['Hour'] = current_week[date_applied_col].dt.hour
+        hourly_dist = current_week['Hour'].value_counts().sort_index().reset_index()
         hourly_dist.columns = ['Heure', 'Candidatures']
 
         hourly_fig = px.bar(
@@ -160,11 +158,11 @@ class DashboardCreator:
             showlegend=False
         )
 
-        df['DayOfWeek'] = df[date_applied_col].dt.day_name()
+        current_week['DayOfWeek'] = current_week[date_applied_col].dt.day_name()
         day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
         day_fr = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
 
-        daily_dist = df['DayOfWeek'].value_counts().reindex(day_order).reset_index()
+        daily_dist = current_week['DayOfWeek'].value_counts().reindex(day_order).reset_index()
         daily_dist.columns = ['Day', 'Candidatures']
         daily_dist['Jour'] = day_fr
 
@@ -219,6 +217,8 @@ class DashboardCreator:
         df[date_applied_col] = pd.to_datetime(df[date_applied_col])
 
         current_week = df[df[date_applied_col] >= df[date_applied_col].max() - pd.Timedelta(days=7)]
+        current_day = df[df[date_applied_col] >= df[date_applied_col].max() - pd.Timedelta(days=1)]
+
 
         most_active_hour = df[date_applied_col].dt.hour.mode().iloc[0]
         most_active_day = df[date_applied_col].dt.day_name().mode().iloc[0]
@@ -226,9 +226,10 @@ class DashboardCreator:
         date_range = (df[date_applied_col].max() - df[date_applied_col].min()).days + 1
         avg_per_day = len(df) / date_range if date_range > 0 else 0
 
-        resp_rate = 1 - len(df) / len(df[df["Status"] == "Applied"])
+        resp_rate = len(df) / len(df[df["Status"] != "Applied"])
 
         return {
+            "current_day": len(current_day),
             "current_week": len(current_week),
             "most_active_hour": f"{most_active_hour}h",
             "most_active_day": most_active_day,
@@ -236,7 +237,9 @@ class DashboardCreator:
             "total_days": date_range,
             "first_application": df['Date Applied'].min().strftime('%d/%m/%Y'),
             "last_application": df['Date Applied'].max().strftime('%d/%m/%Y'),
-            "response_rate": round(resp_rate * 100, 1) if resp_rate else 0
+            "response_rate":resp_rate,
+            "total": len(df),
+            "cities": df["Location"].nunique(),
         }
 
     def create_all_dashboards(self) -> dict:

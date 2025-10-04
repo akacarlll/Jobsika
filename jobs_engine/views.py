@@ -33,7 +33,6 @@ class JobPostingView(View):
         job_url_description = request.POST.get("job_url_for_description", "")
         job_description = request.POST.get("job_description")
         notes = request.POST.get("notes", "")
-
         if not job_url and not job_description:
             messages.error(
                 request,
@@ -61,6 +60,8 @@ class JobPostingView(View):
                 "❌ An error occurred while processing the job offer. Please try again."
             )
             return redirect("jobs_engine:add_job")
+        
+        print("DEBUG: ", self.data)
 
         logger.info("Successfully processed the URL.")
 

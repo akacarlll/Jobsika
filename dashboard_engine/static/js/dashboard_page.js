@@ -4,64 +4,66 @@ document.getElementById("gotoJobEngine").addEventListener("click", function() {
 });
 
 // Function to render Plotly dashboards
-function renderPlotlyDashboard(containerId, figure, height = 400) {
+function renderPlotlyDashboard(containerId, figure) {
     const container = document.getElementById(containerId);
 
-    if (container && figure) {
-        try {
-            // Clear loading content
-            container.innerHTML = '';
+    if (!container) {
+        console.warn(`Container not found: ${containerId}`);
+        return;
+    }
 
-            // Plotly configuration
-            const config = {
-                responsive: true,
-                displayModeBar: false, // Hide toolbar for cleaner look
-                displaylogo: false
-            };
+    if (!figure) {
+        container.innerHTML = `<div class="chart-error">
+            <i class="fas fa-chart-line"></i>
+            <span>Aucune donnée disponible</span>
+        </div>`;
+        return;
+    }
 
-            // Enhanced layout for better display
-            const layout = {
-                ...figure.layout,
-                autosize: true,
-                height: height,
-                margin: {
-                    l: 50,
-                    r: 50,
-                    t: 50,
-                    b: 50
-                },
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                font: {
-                    family: 'Inter, system-ui, sans-serif',
-                    size: 12,
-                    color: '#374151'
-                }
-            };
+    try {
+        // Clear container
+        container.innerHTML = '';
 
-            // Special handling for map
-            if (containerId === 'mapDashboard') {
-                layout.height = 500;
-                layout.margin = { l: 0, r: 0, t: 20, b: 0 };
+        // Get actual container dimensions from CSS
+        const containerHeight = container.offsetHeight || 400;
+        const containerWidth = container.offsetWidth || 600;
+
+        // Plotly configuration
+        const config = {
+            responsive: true,
+            displayModeBar: false,
+            displaylogo: false
+        };
+
+        // Layout - use container dimensions
+        const layout = {
+            ...figure.layout,
+            autosize: true,
+            height: containerHeight,
+            width: containerWidth,
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            margin: {
+                l: 50,
+                r: 50,
+                t: 50,
+                b: 50
             }
+        };
 
-            Plotly.newPlot(container, figure.data, layout, config);
+        // Special handling for map - maximize space
+        if (containerId === 'mapDashboard') {
+            layout.margin = { l: 10, r: 10, t: 30, b: 10 };
+        }
 
-        } catch (error) {
-            console.error(`Error rendering ${containerId}:`, error);
-            container.innerHTML = `<div class="flex items-center justify-center h-full text-red-500">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
-                Erreur de chargement
-            </div>`;
-        }
-    } else {
-        console.warn(`Missing container or figure for ${containerId}`);
-        if (container) {
-            container.innerHTML = `<div class="flex items-center justify-center h-full text-gray-500">
-                <i class="fas fa-chart-line mr-2"></i>
-                Aucune donnée disponible
-            </div>`;
-        }
+        Plotly.newPlot(container, figure.data, layout, config);
+
+    } catch (error) {
+        console.error(`Error rendering ${containerId}:`, error);
+        container.innerHTML = `<div class="chart-error chart-error-critical">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Erreur de chargement</span>
+        </div>`;
     }
 }
 
@@ -110,6 +112,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (dashboardsData.timeline_dashboards.daily) {
                     renderPlotlyDashboard('dailyDashboard', JSON.parse(dashboardsData.timeline_dashboards.daily));
                 }
+                if (dashboardsData.timeline_dashboards.timeline) {
+                    renderPlotlyDashboard('timelineDashboard', JSON.parse(dashboardsData.timeline_dashboards.timeline));
+                }
+                if (dashboardsData.timeline_dashboards.cumulative) {
+                    renderPlotlyDashboard('cumulativeDashboard', JSON.parse(dashboardsData.timeline_dashboards.cumulative));
+                }
             }
         } else {
             console.error("No data found in 'dashboardsData' script tag.");
@@ -127,11 +135,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Responsive handling for Plotly
 window.addEventListener('resize', function() {
-    setTimeout(() => {
+    clearTimeout(window.resizeTimer);
+    window.resizeTimer = setTimeout(() => {
         const plotlyDivs = document.querySelectorAll('[id$="Dashboard"]');
         plotlyDivs.forEach(div => {
-            if (div.data) {
-                Plotly.Plots.resize(div);
+            if (div.data && div.layout) {
+                // Get new container dimensions
+                const newHeight = div.offsetHeight;
+                const newWidth = div.offsetWidth;
+                
+                // Update layout with new dimensions
+                Plotly.relayout(div, {
+                    height: newHeight,
+                    width: newWidth
+                });
             }
         });
     }, 100);
