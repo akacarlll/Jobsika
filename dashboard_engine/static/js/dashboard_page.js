@@ -95,14 +95,15 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         const dashboardsData = JSON.parse(dataElement.textContent);
         
-        // This is the correct data access based on your provided log
         if (dashboardsData) {
-            // The map and skills_pie are nested JSON strings, so they need to be parsed again
             if (dashboardsData.map) {
                 renderPlotlyDashboard('mapDashboard', JSON.parse(dashboardsData.map), 500);
             }
             if (dashboardsData.skills_pie) {
                 renderPlotlyDashboard('skillsPieDashboard', JSON.parse(dashboardsData.skills_pie));
+            }
+            if (dashboardsData.url_pie) {
+                renderPlotlyDashboard('urlPieDashboard', JSON.parse(dashboardsData.url_pie));
             }
             // The timeline_dashboards are a nested object, access its properties directly
             if (dashboardsData.timeline_dashboards) {

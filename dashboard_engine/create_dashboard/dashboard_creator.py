@@ -1,4 +1,5 @@
 import json
+from urllib.parse import urlparse
 
 import pandas as pd
 import plotly
@@ -86,9 +87,9 @@ class DashboardCreator:
                     "lng": float(city_match.iloc[0]["lng"])
                 })
 
-        df = pd.DataFrame(locations_data)
+        self.locations_found_df = pd.DataFrame(locations_data)
 
-        df_grouped = df.groupby(["city_clean", "lat", "lng"], as_index=False).size()
+        df_grouped = self.locations_found_df.groupby(["city_clean", "lat", "lng"], as_index=False).size()
         df_grouped.rename(columns={"size": "count"}, inplace=True)
 
         df_grouped = df_grouped.dropna(subset=['lat', 'lng'])
@@ -161,12 +162,56 @@ class DashboardCreator:
         fig.update_traces(textposition="inside", textinfo="percent+label")
         return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
+    def plot_url_pie(self, col: str = "URL", top_n: int = 10) -> str:
+        """
+        Create a pie chart visualization of the most frequent application websites.
+
+        Args:
+            col (str): Column name containing the URLs.
+            top_n (int): The number of domains to display.
+
+        Returns:
+            str: JSON-encoded Plotly figure.
+        """
+        df = self.job_application_df.copy()
+        df = df.dropna(subset=[col])
+
+        df["domain"] = df[col].apply(
+            lambda x: urlparse(x).netloc.replace("www.", "").strip().lower()
+            if pd.notnull(x) else None
+        )
+        df["domain"] = df["domain"].replace("", "Non Précisé")
+        print(df["domain"].value_counts())
+
+        domain_counts = df["domain"].value_counts().reset_index()
+        domain_counts.columns = ["Domain", "Count"]
+
+        if len(domain_counts) > top_n:
+            top_domains = domain_counts[:top_n]
+            autres = pd.DataFrame([{
+                "Domain": "Autres",
+                "Count": domain_counts["Count"][top_n:].sum()
+            }])
+            domain_counts = pd.concat([top_domains, autres], ignore_index=True)
+
+        fig = px.pie(
+            domain_counts,
+            names="Domain",
+            values="Count",
+            hole=0.2,
+            title="Répartition des candidatures par site web"
+        )
+
+        fig.update_traces(textposition="inside", textinfo="percent+label")
+
+        return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
     def create_comprehensive_timeline_dashboard(self, date_applied_col: str = "Date Applied") -> dict:
         """Create multiple date-based visualizations."""
         df = self.job_application_df.copy()
         df[date_applied_col] = pd.to_datetime(df[date_applied_col])
 
-        current_week = df[df[date_applied_col] >= df[date_applied_col].max() - pd.Timedelta(days=7)]
+        current_week = df[df[date_applied_col] >= df[date_applied_col].max() - pd.Timedelta(days=6)]
 
         daily_apps = df.groupby(df[date_applied_col].dt.date).size().reset_index()
         daily_apps.columns = ['Date', 'Applications']
@@ -251,15 +296,20 @@ class DashboardCreator:
             "cumulative": json.dumps(cumulative_fig, cls=plotly.utils.PlotlyJSONEncoder)
         }
 
-    def calculate_date_statistics(self, date_applied_col: str = "Date Applied") -> dict:
+    def calculate_date_statistics(self, date_applied_col: str = "Date Applied", n_digits: int = 2) -> dict:
         """Calculate useful statistics from date data."""
         df = self.job_application_df.copy()
-        df[date_applied_col] = pd.to_datetime(df[date_applied_col])
+        df[date_applied_col] = pd.to_datetime(df[date_applied_col], utc=True)
 
-        current_week = df[df[date_applied_col] >= df[date_applied_col].max() - pd.Timedelta(days=7)]
-        current_day = df[df[date_applied_col] >= df[date_applied_col].max() - pd.Timedelta(days=1)]
+        today = pd.Timestamp.now(tz="UTC").normalize()
 
+        current_day = df[
+            (df[date_applied_col] >= today) &
+            (df[date_applied_col] < today + pd.Timedelta(days=1))
+        ]
+        current_week = df[df[date_applied_col] >= today - pd.Timedelta(days=6)]
 
+        print(len(f"Number of applications today: {current_day}"))
         most_active_hour = df[date_applied_col].dt.hour.mode().iloc[0]
         most_active_day = df[date_applied_col].dt.day_name().mode().iloc[0]
 
@@ -273,13 +323,13 @@ class DashboardCreator:
             "current_week": len(current_week),
             "most_active_hour": f"{most_active_hour}h",
             "most_active_day": most_active_day,
-            "avg_per_day": round(avg_per_day, 1),
+            "avg_per_day": round(avg_per_day, n_digits),
             "total_days": date_range,
             "first_application": df['Date Applied'].min().strftime('%d/%m/%Y'),
             "last_application": df['Date Applied'].max().strftime('%d/%m/%Y'),
-            "response_rate":resp_rate,
+            "response_rate": round(resp_rate, n_digits),
             "total": len(df),
-            "cities": df["Location"].nunique(),
+            "cities": self.locations_found_df["city_clean"].nunique(),
         }
 
     def create_all_dashboards(self) -> dict:
@@ -293,6 +343,7 @@ class DashboardCreator:
         return {
             "map": self.create_map_dashboard(),
             "skills_pie": self.plot_skills_pie(),
+            "url_pie": self.plot_url_pie(),
             "timeline_dashboards": self.create_comprehensive_timeline_dashboard(),
             "general_stats": self.calculate_date_statistics()
         }

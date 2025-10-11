@@ -24,7 +24,8 @@ class DashboardView(View):
                 "map": dashboards["map"],
                 "skills_pie": dashboards["skills_pie"],
                 "timeline_dashboards": dashboards["timeline_dashboards"],
-                "date_stats": dashboards["general_stats"]
+                "date_stats": dashboards["general_stats"],
+                "url_pie": dashboards["url_pie"],
             }
         }
 
