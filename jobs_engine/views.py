@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.http import HttpRequest
 from django.shortcuts import redirect, render
 from django.views import View
+from django.http import HttpRequest, JsonResponse
 
 from .service import JobApplicationProcessor
 
@@ -29,53 +30,59 @@ class JobPostingView(View):
         Returns:
             HttpResponseRedirect: Redirects to the add job form page with a success or error message.
         """
+        access_token = request.session.get("google_access_token", "")
+
+        if not access_token:
+            return JsonResponse(
+                {"error": "User not authenticated with Google"}, status=401
+            )
+
         job_url = request.POST.get("job_url", "")
         job_url_description = request.POST.get("job_url_for_description", "")
         job_description = request.POST.get("job_description")
         notes = request.POST.get("notes", "")
         if not job_url and not job_description:
             messages.error(
-                request,
-                "❌ Please provide either a job URL or job description."
+                request, "❌ Please provide either a job URL or job description."
             )
             return redirect("jobs_engine:add_job")
         application_processor = JobApplicationProcessor(notes=notes)
 
         # TODO: Verify thats it's a requetable URL
 
-        self.data = {}
-        try :
+        data = {}
+        try:
             if job_url:
                 application_processor.url = job_url
-                self.data = application_processor.process_job_offer()
+                data = application_processor.process_job_offer()
             else:
                 application_processor.url = job_url_description
-                self.data = application_processor.process_job_offer(
+                data = application_processor.process_job_offer(
                     job_description=job_description
                 )
         except Exception as e:
             logger.error(f"Error processing the job offer: {e}")
             messages.error(
                 request,
-                "❌ An error occurred while processing the job offer. Please try again."
+                "❌ An error occurred while processing the job offer. Please try again.",
             )
             return redirect("jobs_engine:add_job")
 
         logger.info("Successfully processed the URL.")
 
-        sheet_response = self.send_to_sheet()
+        sheet_response = self.send_to_sheet(data, access_token)
         if sheet_response == 200:
             messages.success(
                 request,
-                f"✅ {self.data['job_title']} was successfully added to the sheets!",
+                f"✅ {data['job_title']} was successfully added to the sheets!",
             )
         else:
             messages.error(
-                request, f"{self.data['job_title']} was not added to the sheets!"
+                request, f"{data['job_title']} was not added to the sheets!"
             )
         return redirect("jobs_engine:add_job")
 
-    def send_to_sheet(self) -> int:
+    def send_to_sheet(self, data, access_token) -> int:
         """
         Sends the processed job data to the Google Sheets script endpoint.
 
@@ -83,14 +90,16 @@ class JobPostingView(View):
             int: The HTTP status code from the Sheets script response.
         """
         script_url = settings.SHEETS_SCRIPT_URL
-        payload = {
-            **self.data,
+        payload = {**data}
+
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
         }
-        resp = requests.post(script_url, json=payload, timeout=10)
+
+        resp = requests.post(script_url, json=payload, headers=headers, timeout=10)
         resp.raise_for_status()
-
         logger.info(f"Response status code: {resp.status_code}")
-
         return resp.status_code
 
     def get(self, request: HttpRequest):
