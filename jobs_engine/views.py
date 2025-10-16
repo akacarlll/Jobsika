@@ -1,4 +1,7 @@
+"""This is the main entry for the jobs_engine app that add data from a job description to a sheet."""
+
 import logging
+import time
 
 import requests
 from django.conf import settings
@@ -6,51 +9,42 @@ from django.contrib import messages
 from django.http import HttpRequest
 from django.shortcuts import redirect, render
 from django.views import View
-from django.http import HttpRequest, JsonResponse
 
-from .service import JobApplicationProcessor
+from .google_sheet_manager import GoogleSheetsManager
+from .job_application_processor import JobApplicationProcessor
 
 logger = logging.getLogger(__name__)
 
 
 class JobPostingView(View):
-    """
-    View for handling job posting submissions and processing job offers.
-    Handles both GET and POST requests for adding job offers and sending them to Google Sheets.
-    """
+    """View for handling job posting submissions and processing job offers."""
 
     def post(self, request: HttpRequest):
-        """
-        Handles POST requests to process a job offer from a URL or description,
-        sends the processed data to Google Sheets, and provides user feedback.
 
-        Args:
-            request (HttpRequest): The HTTP request object containing form data.
-
-        Returns:
-            HttpResponseRedirect: Redirects to the add job form page with a success or error message.
-        """
-        access_token = request.session.get("google_access_token", "")
-
+        access_token: str = request.session.get("google_access_token", "")
         if not access_token:
-            return JsonResponse(
-                {"error": "User not authenticated with Google"}, status=401
-            )
+            messages.error(request, "❌ Please log in with Google first.")
+            return redirect("home_page:home")
 
-        job_url = request.POST.get("job_url", "")
-        job_url_description = request.POST.get("job_url_for_description", "")
-        job_description = request.POST.get("job_description")
+        token_expires_at = request.session.get("google_token_expires_at", 0)
+        if time.time() >= token_expires_at:
+            if not self.refresh_access_token(request):
+                messages.error(request, "❌ Your session expired. Please log in again.")
+                return redirect("home_page:home")
+            access_token: str = request.session.get("google_access_token", "")
+        job_url = request.POST.get("job_url", "").strip()
+        job_url_description = request.POST.get("job_url_for_description", "").strip()
+        job_description = request.POST.get("job_description", "").strip()
         notes = request.POST.get("notes", "")
+
         if not job_url and not job_description:
             messages.error(
                 request, "❌ Please provide either a job URL or job description."
             )
             return redirect("jobs_engine:add_job")
+
         application_processor = JobApplicationProcessor(notes=notes)
 
-        # TODO: Verify thats it's a requetable URL
-
-        data = {}
         try:
             if job_url:
                 application_processor.url = job_url
@@ -61,46 +55,39 @@ class JobPostingView(View):
                     job_description=job_description
                 )
         except Exception as e:
-            logger.error(f"Error processing the job offer: {e}")
+            logger.error(f"Error processing job offer: {e}", exc_info=True)
             messages.error(
-                request,
-                "❌ An error occurred while processing the job offer. Please try again.",
+                request, "❌ Failed to process the job offer. Please try again."
             )
             return redirect("jobs_engine:add_job")
 
-        logger.info("Successfully processed the URL.")
+        logger.info("Successfully processed job offer.")
 
-        sheet_response = self.send_to_sheet(data, access_token)
-        if sheet_response == 200:
-            messages.success(
-                request,
-                f"✅ {data['job_title']} was successfully added to the sheets!",
-            )
-        else:
+        try:
+            sheets_manager = GoogleSheetsManager(access_token)
+
+            spreadsheet_id = sheets_manager.get_or_create_spreadsheet()
+
+            sheets_manager.append_row(spreadsheet_id, data)
+
+            messages.success(request, f"✅ {data['job_title']} was successfully added!")
+        except requests.HTTPError as e:
+            if e.response.status_code == 401:
+                messages.error(
+                    request, "❌ Authentication expired. Please log in again."
+                )
+                return redirect("home_page:home")
+            logger.error(f"HTTP error sending to Google Sheets: {e}", exc_info=True)
             messages.error(
-                request, f"{data['job_title']} was not added to the sheets!"
+                request, "❌ Failed to save to Google Sheets. Please try again."
             )
+        except requests.RequestException as e:
+            logger.error(f"Error sending to Google Sheets: {e}", exc_info=True)
+            messages.error(
+                request, "❌ Failed to connect to Google Sheets. Please try again."
+            )
+
         return redirect("jobs_engine:add_job")
-
-    def send_to_sheet(self, data, access_token) -> int:
-        """
-        Sends the processed job data to the Google Sheets script endpoint.
-
-        Returns:
-            int: The HTTP status code from the Sheets script response.
-        """
-        script_url = settings.SHEETS_SCRIPT_URL
-        payload = {**data}
-
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json"
-        }
-
-        resp = requests.post(script_url, json=payload, headers=headers, timeout=10)
-        resp.raise_for_status()
-        logger.info(f"Response status code: {resp.status_code}")
-        return resp.status_code
 
     def get(self, request: HttpRequest):
         """
@@ -114,6 +101,49 @@ class JobPostingView(View):
         """
 
         return render(request, "jobs_engine/add_job.html")
+
+    def refresh_access_token(self, request: HttpRequest) -> bool:
+        """
+        Refreshes the access token using the refresh token.
+
+        Args:
+            request: The HTTP request object
+
+        Returns:
+            True if refresh was successful, False otherwise
+        """
+        refresh_token = request.session.get("google_refresh_token")
+        if not refresh_token:
+            return False
+
+        token_url = "https://oauth2.googleapis.com/token"
+        data = {
+            "client_id": settings.GOOGLE_OAUTH2_CLIENT_ID,
+            "client_secret": settings.GOOGLE_OAUTH2_CLIENT_SECRET,
+            "refresh_token": refresh_token,
+            "grant_type": "refresh_token",
+        }
+
+        try:
+            response = requests.post(token_url, data=data, timeout=10)
+            response.raise_for_status()
+            token_data = response.json()
+
+            access_token = token_data.get("access_token")
+            expires_in = token_data.get("expires_in", 3600)
+
+            if not access_token:
+                return False
+
+            request.session["google_access_token"] = access_token
+            request.session["google_token_expires_at"] = time.time() + expires_in
+
+            logger.info("Successfully refreshed access token")
+            return True
+
+        except requests.RequestException as e:
+            logger.error(f"Error refreshing access token: {e}", exc_info=True)
+            return False
 
 
 class DisconnectView(View):

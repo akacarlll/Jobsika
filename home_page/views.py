@@ -1,12 +1,13 @@
 import secrets
 from urllib.parse import urlencode
 
+import requests
 from django.conf import settings
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import View
-import requests
+
 
 class HomeView(View):
     """View for rendering the home page and initiating Google OAuth2 authentication."""
